@@ -77,7 +77,7 @@ void call(Map args = [:], Closure body) {
                                         }
                                     }
                                 echo "Downloading artifacts from $assetUrl"
-                                sh "curl -OJ -L -H 'Accept: application/octet-stream' -H 'Authorization: Bearer ${GITHUB_TOKEN}' ${assetUrl} | tar -xzv"
+                                sh "curl -J -L -H 'Accept: application/octet-stream' -H 'Authorization: Bearer ${GITHUB_TOKEN}' ${assetUrl} | tar -xzv"
                             }
                         }
                     }
