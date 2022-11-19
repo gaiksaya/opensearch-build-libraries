@@ -15,11 +15,11 @@ void call(Map args = [:]) {
     lib = library(identifier: 'jenkins@main', retriever: legacySCM(scm))
     String releaseArtifactsDir = args.artifactsPath ?: 'dist'
 
-    // signArtifacts(
-    //     artifactPath: releaseArtifactsDir,
-    //     sigtype: '.asc',
-    //     platform: 'linux'
-    // )
+    signArtifacts(
+        artifactPath: releaseArtifactsDir,
+        sigtype: '.asc',
+        platform: 'linux'
+    )
 
     withCredentials([usernamePassword(credentialsId: 'jenkins-opensearch-pypi-username', usernameVariable: 'TWINE_USERNAME', passwordVariable: 'TWINE_PASSWORD')]) {
             sh """twine upload -r pypi ${releaseArtifactsDir}/*"""
