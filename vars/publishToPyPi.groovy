@@ -13,7 +13,7 @@
 */
 void call(Map args = [:]) {
     lib = library(identifier: 'jenkins@main', retriever: legacySCM(scm))
-    String releaseArtifactsDir = args.artifactsPath ?: 'dist'
+    String releaseArtifactsDir = args.artifactsPath ?: 'dist/*'
 
     signArtifacts(
         artifactPath: releaseArtifactsDir,
@@ -21,7 +21,7 @@ void call(Map args = [:]) {
         platform: 'linux'
     )
 
-    withCredentials([usernamePassword(credentialsId: 'jenkins-opensearch-pypi-username', usernameVariable: 'TWINE_USERNAME', passwordVariable: 'TWINE_PASSWORD')]) {
-            sh """twine upload -r pypi ${releaseArtifactsDir}/*"""
-    }
+    // withCredentials([usernamePassword(credentialsId: 'jenkins-opensearch-pypi-username', usernameVariable: 'TWINE_USERNAME', passwordVariable: 'TWINE_PASSWORD')]) {
+    //         sh """twine upload -r pypi ${releaseArtifactsDir}/*"""
+    // }
 }
