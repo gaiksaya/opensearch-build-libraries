@@ -134,23 +134,22 @@ void call(Map args = [:]) {
                 }
         }
         else {
-            // withCredentials([usernamePassword(credentialsId: "${GITHUB_BOT_TOKEN_NAME}", usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN'),
-            //     string(credentialsId: 'jenkins-signer-client-role', variable: 'SIGNER_CLIENT_ROLE'),
-            //     string(credentialsId: 'jenkins-signer-client-external-id', variable: 'SIGNER_CLIENT_EXTERNAL_ID'),
-            //     string(credentialsId: 'jenkins-signer-client-unsigned-bucket', variable: 'SIGNER_CLIENT_UNSIGNED_BUCKET'),
-            //     string(credentialsId: 'jenkins-signer-client-signed-bucket', variable: 'SIGNER_CLIENT_SIGNED_BUCKET')]) {
-            //     sh """
-            //        #!/bin/bash
-            //        set +x
-            //        export ROLE=$SIGNER_CLIENT_ROLE
-            //        export EXTERNAL_ID=$SIGNER_CLIENT_EXTERNAL_ID
-            //        export UNSIGNED_BUCKET=$SIGNER_CLIENT_UNSIGNED_BUCKET
-            //        export SIGNED_BUCKET=$SIGNER_CLIENT_SIGNED_BUCKET
+            withCredentials([usernamePassword(credentialsId: "${GITHUB_BOT_TOKEN_NAME}", usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN'),
+                string(credentialsId: 'jenkins-signer-client-role', variable: 'SIGNER_CLIENT_ROLE'),
+                string(credentialsId: 'jenkins-signer-client-external-id', variable: 'SIGNER_CLIENT_EXTERNAL_ID'),
+                string(credentialsId: 'jenkins-signer-client-unsigned-bucket', variable: 'SIGNER_CLIENT_UNSIGNED_BUCKET'),
+                string(credentialsId: 'jenkins-signer-client-signed-bucket', variable: 'SIGNER_CLIENT_SIGNED_BUCKET')]) {
+                sh """
+                   #!/bin/bash
+                   set +x
+                   export ROLE=$SIGNER_CLIENT_ROLE
+                   export EXTERNAL_ID=$SIGNER_CLIENT_EXTERNAL_ID
+                   export UNSIGNED_BUCKET=$SIGNER_CLIENT_UNSIGNED_BUCKET
+                   export SIGNED_BUCKET=$SIGNER_CLIENT_SIGNED_BUCKET
 
-            //        echo "hello"
-            //    """
-            //     }
-            sh 'echo signing artifacts now'
+                   $WORKSPACE/sign.sh ${arguments}
+               """
+                }
         }
     }
 }
