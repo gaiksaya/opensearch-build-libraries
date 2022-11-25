@@ -15,5 +15,7 @@
 void call(Map args = [:]) {
     String releaseArtifactsDir = args.gemsDir ? "${WORKSPACE}/${args.gemsDir}" : "${WORKSPACE}/dist"
 
-    sh """cd ${releaseArtifactsDir} && gem install `ls *.gem` -P HighSecurity && curl --fail --data-binary @`ls *.gem` -H 'Authorization:${API_KEY}' -H 'Content-Type: application/octet-stream' https://rubygems.org/api/v1/gems"""
+    withCredentials([string(credentialsId: "${args.apiKey}", variable: 'API_KEY')]) {
+        sh """cd ${releaseArtifactsDir} && gem install `ls *.gem` -P HighSecurity && curl --fail --data-binary @`ls *.gem` -H 'Authorization:${API_KEY}' -H 'Content-Type: application/octet-stream' https://rubygems.org/api/v1/gems"""
+        }
 }
