@@ -16,7 +16,7 @@ void call(Map args = [:]) {
     String releaseArtifactsDir = args.gemsDir ? "${WORKSPACE}/${args.gemsDir}" : "${WORKSPACE}/dist"
 
     try {
-        sh "cd ${releaseArtifactsDir} && gem install ${gemName} -P HighSecurity"
+        sh "cd ${releaseArtifactsDir} && gem install `ls *.gem` -P HighSecurity"
     } catch (Exception e) {
         echo "${gemName} is not signed. Please sign the gem before retrying"
     } finally {
