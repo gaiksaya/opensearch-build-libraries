@@ -23,13 +23,13 @@ void call(Map args = [:]) {
     String rubyVersion = args.rubyVersion ?: '2.6.0'
 
     sh """
-        source \$RVM_HOME/../scripts/rvm && rvm use ${rubyVersion} && ruby --version
+        ruby --version
         gem cert --add ${certPath}
         cd ${releaseArtifactsDir} && gemNameWithVersion=\$(ls *.gem)
-        gem install \$gemNameWithVersion
+        jruby -S gem install \$gemNameWithVersion
         gemName=\$(echo \$gemNameWithVersion | sed -E 's/(-[0-9.]+-*[a-z]*.gem\$)//g')
         gem uninstall \$gemName
-        gem install \$gemNameWithVersion -P HighSecurity
+        jruby -S gem install \$gemNameWithVersion -P HighSecurity
     """
 
     withCredentials([string(credentialsId: "${args.apiKeyCredentialId}", variable: 'API_KEY')]) {
