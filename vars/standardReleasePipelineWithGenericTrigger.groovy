@@ -66,6 +66,7 @@ void call(Map arguments = [:], Closure body) {
                 steps {
                     script {
                         if (arguments.downloadReleaseAsset && "$assets_url" != '') {
+                            echo 'Downloading asset starts'
                             withCredentials([usernamePassword(credentialsId: 'jenkins-github-bot-token', usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
                                 String assets = sh(
                                     script: "curl -H 'Accept: application/vnd.github+json' -H 'Authorization: Bearer ${GITHUB_TOKEN}' ${assets_url}",
