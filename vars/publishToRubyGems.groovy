@@ -22,8 +22,8 @@ void call(Map args = [:]) {
     String certPath = args.publicCertPath ? "${WORKSPACE}/${args.publicCertPath}" : "${WORKSPACE}/certs/opensearch-rubygems.pem"
     String rubyVersion = args.rubyVersion ?: '2.6.0'
 
-    sh """
-        . /usr/share/opensearch/.rvm/scripts/rvm && rvm use ${rubyVersion} && ruby --version
+    sh """#!/bin/bash
+        source /usr/share/opensearch/.rvm/scripts/rvm && rvm use ${rubyVersion} && ruby --version
         gem cert --add ${certPath}
         cd ${releaseArtifactsDir} && gemNameWithVersion=\$(ls *.gem)
         gem install \$gemNameWithVersion
