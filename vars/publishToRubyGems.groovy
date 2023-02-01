@@ -23,7 +23,7 @@ void call(Map args = [:]) {
     String rubyVersion = args.rubyVersion ?: '2.6.0'
 
     sh """
-        source /usr/local/rvm/scripts/rvm && rvm use ${rubyVersion} && ruby --version
+        /bin/bash -l && rvm use ${rubyVersion} && ruby --version
         gem cert --add ${certPath}
         cd ${releaseArtifactsDir} && gemNameWithVersion=\$(ls *.gem)
         gem install \$gemNameWithVersion
