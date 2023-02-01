@@ -26,10 +26,10 @@ void call(Map args = [:]) {
         source /etc/profile.d/rvm.sh && rvm use ${rubyVersion} ruby --version
         gem cert --add ${certPath}
         cd ${releaseArtifactsDir} && gemNameWithVersion=\$(ls *.gem)
-        jruby -S gem install \$gemNameWithVersion
+        gem install \$gemNameWithVersion
         gemName=\$(echo \$gemNameWithVersion | sed -E 's/(-[0-9.]+-*[a-z]*.gem\$)//g')
         gem uninstall \$gemName
-        jruby -S gem install \$gemNameWithVersion -P HighSecurity
+        gem install \$gemNameWithVersion -P HighSecurity
     """
 
     withCredentials([string(credentialsId: "${args.apiKeyCredentialId}", variable: 'API_KEY')]) {
