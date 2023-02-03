@@ -51,9 +51,6 @@ class PublishToArtifactsProdBucketLibTester extends LibFunctionTester {
         assertThat(call.args.roleName.first(), notNullValue())
         assertThat(call.args.source.first(), notNullValue())
         assertThat(call.args.destination.first(), notNullValue())
-        // assertThat(call.args.sigtype.first(), notNullValue())
-        // assertThat(call.args.signingPlatform.first(), notNullValue())
-        // assertThat(call.args.overwrite.first(), notNullValue())
     }
 
     boolean expectedParametersMatcher(call) {
