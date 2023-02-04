@@ -25,6 +25,7 @@ void call(Map args = [:]) {
             sigtype: args.sigType ?: '.sig',
             overwrite: args.overwrite ?: false
             )
+    sh 'ls -l'
     withCredentials([
         string(credentialsId: 'jenkins-aws-production-account', variable: 'AWS_ACCOUNT_ARTIFACT'),
         string(credentialsId: 'jenkins-artifact-production-bucket-name', variable: 'ARTIFACT_PRODUCTION_BUCKET_NAME')]) {
