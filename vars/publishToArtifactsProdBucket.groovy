@@ -26,10 +26,9 @@ void call(Map args = [:]) {
             overwrite: args.overwrite ?: false
             )
     withCredentials([
-        string(credentialsId: "${args.roleName}", variable: 'ARTIFACT_PROMOTION_ROLE_NAME'),
         string(credentialsId: 'jenkins-aws-production-account', variable: 'AWS_ACCOUNT_ARTIFACT'),
         string(credentialsId: 'jenkins-artifact-production-bucket-name', variable: 'ARTIFACT_PRODUCTION_BUCKET_NAME')]) {
-            withAWS(role: "${ARTIFACT_PROMOTION_ROLE_NAME}", roleAccount: "${AWS_ACCOUNT_ARTIFACT}", duration: 900, roleSessionName: 'jenkins-session') {
+            withAWS(role: 'gaiksaya-fork-public-role', roleAccount: "${AWS_ACCOUNT_ARTIFACT}", duration: 900, roleSessionName: 'jenkins-session') {
                 s3Upload(file: "${args.source}", bucket: "${ARTIFACT_PRODUCTION_BUCKET_NAME}", path: "${args.destination}")
         }
     }
