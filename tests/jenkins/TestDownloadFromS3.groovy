@@ -43,7 +43,7 @@ class TestDownloadFromS3 extends BuildPipelineTest {
         def aws = getMethodCall('withAWS')
         assertThat(aws, hasItem('{role=tmp-role, roleAccount=AWS_ACCOUNT_NUMBER, duration=900, roleSessionName=jenkins-session}, groovy.lang.Closure'))
         def download = getMethodCall('s3Download')
-        assertThat(download, hasItem('{file=/download/path, bucket=dummy_bucket, path=/tmp, force=false}'))
+        assertThat(download, hasItem('{file=/tmp, bucket=dummy_bucket, path=/download/path, force=false}'))
     }
 
     def getMethodCall(methodName) {

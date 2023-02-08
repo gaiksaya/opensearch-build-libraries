@@ -7,4 +7,4 @@
                   downloadFromS3.string({credentialsId=role-credential-id, variable=AWS_ACCOUNT_NUMBER})
                   downloadFromS3.withCredentials([AWS_ACCOUNT_NUMBER], groovy.lang.Closure)
                      downloadFromS3.withAWS({role=tmp-role, roleAccount=AWS_ACCOUNT_NUMBER, duration=900, roleSessionName=jenkins-session}, groovy.lang.Closure)
-                        downloadFromS3.s3Download({file=/download/path, bucket=dummy_bucket, path=/tmp, force=false})
+                        downloadFromS3.s3Download({file=/tmp, bucket=dummy_bucket, path=/download/path, force=false})
