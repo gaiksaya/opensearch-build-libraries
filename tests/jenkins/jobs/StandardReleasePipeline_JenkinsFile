@@ -10,5 +10,5 @@ standardReleasePipeline()
         localPath: "test2/",
         force: true
     )
-    sh "ls -l && ls -l test2"
+    sh "ls -l && ls -l test2/test/test1/"
 }
