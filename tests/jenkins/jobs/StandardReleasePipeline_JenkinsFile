@@ -1,11 +1,17 @@
+lib = library(identifier: 'jenkins@modify-s3-download', retriever: modernSCM([
+    $class: 'GitSCMSource',
+    remote: 'https://github.com/gaiksaya/opensearch-build-libraries-1.git',
+]))
+
 standardReleasePipeline()
 {
-    fakePublishToMaven(
-        mavenArtifactsPath: "/maven",
-        autoPublish: true
+    downloadFromS3(
+        assumedRoleName: 'opensearch-bundle',
+        roleAccountNumberCred: 'jenkins-aws-account-public',
+        downloadPath: 'test/test1/peru.jpg',
+        bucketName: 'opensearch-ci-test-buildbucket51d063ef-15e184swqkj7r',
+        localPath: "test2/",
+        force: true
     )
-}
-  
-def fakePublishToMaven(Map args) {
-      echo "fakePublishToMaven ${args}"
+    sh "ls -l && ls -l test2"
 }
