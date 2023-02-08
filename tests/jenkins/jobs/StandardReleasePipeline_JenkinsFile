@@ -7,8 +7,7 @@ standardReleasePipeline()
         roleAccountNumberCred: 'jenkins-aws-account-public',
         downloadPath: 'test/test1/',
         bucketName: 'opensearch-ci-test-buildbucket51d063ef-15e184swqkj7r',
-        localPath: "test2/",
         force: true
     )
-    sh "ls -l && ls -l test2/test/test1/"
+    sh "ls -l && ls -l test/test1/"
 }
