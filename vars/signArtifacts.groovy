@@ -105,7 +105,7 @@ void call(Map args = [:]) {
 
         if (!fileExists("$WORKSPACE/sign.sh")) {
             dir('opensearch-build') {
-                git url: 'https://github.com/gaiksaya/opensearch-build.git', branch: 'test-sign'
+                git url: 'https://github.com/opensearch-project/opensearch-build.git', branch: 'main'
                 workdir = "${WORKSPACE}/opensearch-build"
             }
         }
@@ -147,6 +147,10 @@ void call(Map args = [:]) {
                 sh """
                    #!/bin/bash
                    set +x
+                   export ROLE=$SIGNER_CLIENT_ROLE
+                   export EXTERNAL_ID=$SIGNER_CLIENT_EXTERNAL_ID
+                   export UNSIGNED_BUCKET=$SIGNER_CLIENT_UNSIGNED_BUCKET
+                   export SIGNED_BUCKET=$SIGNER_CLIENT_SIGNED_BUCKET
 
                    ${workdir}/sign.sh ${arguments}
                """
