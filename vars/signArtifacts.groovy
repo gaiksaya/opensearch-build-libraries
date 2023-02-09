@@ -145,13 +145,6 @@ void call(Map args = [:]) {
                 string(credentialsId: 'jenkins-signer-client-unsigned-bucket', variable: 'SIGNER_CLIENT_UNSIGNED_BUCKET'),
                 string(credentialsId: 'jenkins-signer-client-signed-bucket', variable: 'SIGNER_CLIENT_SIGNED_BUCKET')]) {
                 sh """
-                   #!/bin/bash
-                   set +x
-                   export ROLE=lol
-                   export EXTERNAL_ID=lol
-                   export UNSIGNED_BUCKET=lol
-                   export SIGNED_BUCKET=lol
-
                    ${workdir}/sign.sh ${arguments}
                """
                 }
