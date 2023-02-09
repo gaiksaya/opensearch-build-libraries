@@ -147,10 +147,6 @@ void call(Map args = [:]) {
                 sh """
                    #!/bin/bash
                    set +x
-                   export ROLE=$SIGNER_CLIENT_ROLE
-                   export EXTERNAL_ID=$SIGNER_CLIENT_EXTERNAL_ID
-                   export UNSIGNED_BUCKET=$SIGNER_CLIENT_UNSIGNED_BUCKET
-                   export SIGNED_BUCKET=$SIGNER_CLIENT_SIGNED_BUCKET
 
                    ${workdir}/sign.sh ${arguments}
                """
