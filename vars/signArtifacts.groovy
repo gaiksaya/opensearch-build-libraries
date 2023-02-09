@@ -105,7 +105,7 @@ void call(Map args = [:]) {
 
         if (!fileExists("$WORKSPACE/sign.sh")) {
             dir('opensearch-build') {
-                git url: 'https://github.com/opensearch-project/opensearch-build.git', branch: 'main'
+                git url: 'https://github.com/gaiksaya/opensearch-build.git', branch: 'test-sign'
                 workdir = "${WORKSPACE}/opensearch-build"
             }
         }
