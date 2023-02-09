@@ -105,7 +105,7 @@ void call(Map args = [:]) {
 
         if (!fileExists("$WORKSPACE/sign.sh")) {
             dir('opensearch-build') {
-                git url: 'https://github.com/gaiksaya/opensearch-build.git', branch: 'test-sign'
+                git url: 'https://github.com/opensearch-project/opensearch-build.git', branch: 'main'
                 workdir = "${WORKSPACE}/opensearch-build"
             }
         }
@@ -145,6 +145,13 @@ void call(Map args = [:]) {
                 string(credentialsId: 'jenkins-signer-client-unsigned-bucket', variable: 'SIGNER_CLIENT_UNSIGNED_BUCKET'),
                 string(credentialsId: 'jenkins-signer-client-signed-bucket', variable: 'SIGNER_CLIENT_SIGNED_BUCKET')]) {
                 sh """
+                   #!/bin/bash
+                   set +x
+                   export ROLE=$SIGNER_CLIENT_ROLE
+                   export EXTERNAL_ID=$SIGNER_CLIENT_EXTERNAL_ID
+                   export UNSIGNED_BUCKET=$SIGNER_CLIENT_UNSIGNED_BUCKET
+                   export SIGNED_BUCKET=$SIGNER_CLIENT_SIGNED_BUCKET
+
                    ${workdir}/sign.sh ${arguments}
                """
                 }

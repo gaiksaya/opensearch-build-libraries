@@ -19,12 +19,12 @@
 void call(Map args = [:]) {
     lib = library(identifier: 'jenkins@main', retriever: legacySCM(scm))
     println('Signing the artifacts')
-    signArtifacts(
-            artifactPath: args.source,
-            platform: args.signingPlatform ?: 'linux',
-            sigtype: args.sigType ?: '.sig',
-            overwrite: args.sigOverwrite ?: false
-            )
+    // signArtifacts(
+    //         artifactPath: args.source,
+    //         platform: args.signingPlatform ?: 'linux',
+    //         sigtype: args.sigType ?: '.sig',
+    //         overwrite: args.sigOverwrite ?: false
+    //         )
     println('Uploading the artifacts')
     withCredentials([
         string(credentialsId: 'jenkins-aws-production-account', variable: 'AWS_ACCOUNT_ARTIFACT'),
