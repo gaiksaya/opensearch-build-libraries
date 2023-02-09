@@ -19,7 +19,7 @@ void call(Map args = [:]) {
     boolean forceDownload = args.force ?: false
 
     withCredentials([string(credentialsId: "${args.roleAccountNumberCred}", variable: 'AWS_ACCOUNT_NUMBER')]) {
-            withAWS(role: args.assumedRoleName, roleAccount: "${AWS_ACCOUNT_NUMBER}", duration: 900, roleSessionName: 'jenkins-session') {
+            withAWS(role: args.assumedRoleName, roleAccount: "${AWS_ACCOUNT_NUMBER}", duration: 900, roleSessionName: 'jenkins-session', region:'us-west-2') {
                 s3Download(file: args.localPath, bucket: args.bucketName, path: args.downloadPath, force: "${forceDownload}")
             }
     }

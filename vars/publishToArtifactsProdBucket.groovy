@@ -29,7 +29,7 @@ void call(Map args = [:]) {
     withCredentials([
         string(credentialsId: 'jenkins-aws-production-account', variable: 'AWS_ACCOUNT_ARTIFACT'),
         string(credentialsId: 'jenkins-artifact-production-bucket-name', variable: 'ARTIFACT_PRODUCTION_BUCKET_NAME')]) {
-            withAWS(role: "${args.assumedRoleName}", roleAccount: "${AWS_ACCOUNT_ARTIFACT}", duration: 900, roleSessionName: 'jenkins-session', region:'us-west-2') {
+            withAWS(role: "${args.assumedRoleName}", roleAccount: "${AWS_ACCOUNT_ARTIFACT}", duration: 900, roleSessionName: 'jenkins-session') {
                 s3Upload(file: "${args.source}", bucket: "${ARTIFACT_PRODUCTION_BUCKET_NAME}", path: "${args.destination}")
         }
     }
