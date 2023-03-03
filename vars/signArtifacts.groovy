@@ -117,26 +117,27 @@ void call(Map args = [:]) {
         // Sign artifacts
         // def configSecret = args.platform == "windows" ? "jenkins-signer-windows-config" : "jenkins-signer-client-creds"
         if (args.platform == 'windows') {
-            withCredentials([usernamePassword(credentialsId: "${GITHUB_BOT_TOKEN_NAME}", usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN'),
-                string(credentialsId: 'jenkins-signer-windows-role', variable: 'SIGNER_WINDOWS_ROLE'),
-                string(credentialsId: 'jenkins-signer-windows-external-id', variable: 'SIGNER_WINDOWS_EXTERNAL_ID'),
-                string(credentialsId: 'jenkins-signer-windows-unsigned-bucket', variable: 'SIGNER_WINDOWS_UNSIGNED_BUCKET'),
-                string(credentialsId: 'jenkins-signer-windows-signed-bucket', variable: 'SIGNER_WINDOWS_SIGNED_BUCKET'),
-                string(credentialsId: 'jenkins-signer-windows-profile-identifier', variable: 'SIGNER_WINDOWS_PROFILE_IDENTIFIER'),
-                string(credentialsId: 'jenkins-signer-windows-platform-identifier', variable: 'SIGNER_WINDOWS_PLATFORM_IDENTIFIER')]) {
-                sh """
-                   #!/bin/bash
-                   set +x
-                   export ROLE=$SIGNER_WINDOWS_ROLE
-                   export EXTERNAL_ID=$SIGNER_WINDOWS_EXTERNAL_ID
-                   export UNSIGNED_BUCKET=$SIGNER_WINDOWS_UNSIGNED_BUCKET
-                   export SIGNED_BUCKET=$SIGNER_WINDOWS_SIGNED_BUCKET
-                   export PROFILE_IDENTIFIER=$SIGNER_WINDOWS_PROFILE_IDENTIFIER
-                   export PLATFORM_IDENTIFIER=$SIGNER_WINDOWS_PLATFORM_IDENTIFIER
+            // withCredentials([usernamePassword(credentialsId: "${GITHUB_BOT_TOKEN_NAME}", usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN'),
+            //     string(credentialsId: 'jenkins-signer-windows-role', variable: 'SIGNER_WINDOWS_ROLE'),
+            //     string(credentialsId: 'jenkins-signer-windows-external-id', variable: 'SIGNER_WINDOWS_EXTERNAL_ID'),
+            //     string(credentialsId: 'jenkins-signer-windows-unsigned-bucket', variable: 'SIGNER_WINDOWS_UNSIGNED_BUCKET'),
+            //     string(credentialsId: 'jenkins-signer-windows-signed-bucket', variable: 'SIGNER_WINDOWS_SIGNED_BUCKET'),
+            //     string(credentialsId: 'jenkins-signer-windows-profile-identifier', variable: 'SIGNER_WINDOWS_PROFILE_IDENTIFIER'),
+            //     string(credentialsId: 'jenkins-signer-windows-platform-identifier', variable: 'SIGNER_WINDOWS_PLATFORM_IDENTIFIER')]) {
+            //     sh """
+            //        #!/bin/bash
+            //        set +x
+            //        export ROLE=$SIGNER_WINDOWS_ROLE
+            //        export EXTERNAL_ID=$SIGNER_WINDOWS_EXTERNAL_ID
+            //        export UNSIGNED_BUCKET=$SIGNER_WINDOWS_UNSIGNED_BUCKET
+            //        export SIGNED_BUCKET=$SIGNER_WINDOWS_SIGNED_BUCKET
+            //        export PROFILE_IDENTIFIER=$SIGNER_WINDOWS_PROFILE_IDENTIFIER
+            //        export PLATFORM_IDENTIFIER=$SIGNER_WINDOWS_PLATFORM_IDENTIFIER
 
-                   ${workdir}/sign.sh ${arguments}
-               """
-                }
+            //        ${workdir}/sign.sh ${arguments}
+            //    """
+            sh "echo 'Now signing: ${arguments}'"
+                // }
         }
         else {
             withCredentials([usernamePassword(credentialsId: "${GITHUB_BOT_TOKEN_NAME}", usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN'),
