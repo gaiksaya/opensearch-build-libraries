@@ -36,9 +36,7 @@ void call(Map args = [:]) {
             dotnet pack ${WORKSPACE}/${args.solutionFilePath} --configuration Release --no-build
             for package in `find src -name OpenSearch*.nupkg`
                 do
-                    // dotnet nuget push \$package --api-key ${API_KEY} --source https://api.nuget.org/v3/index.json
-                    cat \$package
-                    echo 'Now publishing \$package'
+                    echo Now publishing \$package
                 done
         """
     }
