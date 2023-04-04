@@ -9,14 +9,12 @@
 import static org.hamcrest.CoreMatchers.notNullValue
 import static org.hamcrest.MatcherAssert.assertThat
 
-class PublishToNpmLibTester extends LibFunctionTester {
+class PublishToNpmWithTarballLibTester extends LibFunctionTester {
 
-    private String repository
-    private String tag
+    private String artifactPath = ''
 
-    public PublishToNpmLibTester(repository, tag) {
-        this.repository = repository
-        this.tag = tag
+    public PublishToNpmWithTarballLibTester(artifactPath) {
+        this.artifactPath = artifactPath
     }
 
     void configure(helper, binding) {
@@ -27,13 +25,11 @@ class PublishToNpmLibTester extends LibFunctionTester {
         })
     }
     void parameterInvariantsAssertions(call) {
-        assertThat(call.args.repository.first(), notNullValue())
-        assertThat(call.args.tag.first(), notNullValue())
+        assertThat(call.args.artifactPath.first(), notNullValue())
     }
 
     boolean expectedParametersMatcher(call) {
-        return call.args.repository.first().toString().equals(this.repository)
-            && call.args.tag.first().toString().equals(this.tag)
+        return call.args.artifactPath.first().toString().equals(this.artifactPath)
     }
 
     String libFunctionName() {
