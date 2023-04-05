@@ -25,7 +25,7 @@ void call(Map args = [:]) {
         error('publicationType: artifact needs an artifactPath. Please provide artifactPath argument. See supported artifacts https://docs.npmjs.com/cli/v9/commands/npm-publish?v=true#description for more details')
     }
     if (args.publicationType == 'github') {
-        checkout([$class: 'GitSCM', branches: [[name: "${args.tag}" ]], userRemoteConfigs: [[url: "${args.repository}" ]]])
+        checkout([$class: 'GitSCM', branches: [[name: "$tag" ]], userRemoteConfigs: [[url: "$repository" ]]])
     }
 
     withCredentials([string(credentialsId: 'jenkins-opensearch-publish-to-npm-token', variable: 'NPM_TOKEN')]) {
