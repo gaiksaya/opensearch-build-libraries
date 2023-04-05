@@ -15,14 +15,19 @@ OR
 @param args.artifactPath <required> - Artifact path to publish to NPM. Defaults to package.json See supported artifacts https://docs.npmjs.com/cli/v9/commands/npm-publish?v=true#description for more details.
 */
 void call(Map args = [:]) {
+    allowedPublicationType = ['github', 'artifact']
     artifactPath = args.artifactPath ?: ''
 
-    if (args.artifactPath && args.repository && args.tag) {
+    if (!allowedPublicationType.contains(args.publicationType)) {
         currentBuild.result = 'ABORTED'
-        error('Artifact Path and GitHub repository details are mutually exclusive. Please use either repository and tag OR artifactPath as arguments')
+        error('Invalid publicationType. publicationType can either be github or artifact')
     }
-    if (!args.artifactPath) {
-        checkout([$class: 'GitSCM', branches: [[name: "${args.tag}" ]], userRemoteConfigs: [[url: "${args.repository}" ]]])
+    if (args.publicationType == 'artifact' && !args.artifactPath) {
+        currentBuild.result = 'ABORTED'
+        error('publicationType: artifact needs an artifactPath. Please provide artifactPath argument. See supported artifacts https://docs.npmjs.com/cli/v9/commands/npm-publish?v=true#description for more details')
+    }
+    if (args.publicationType == 'github') {
+        checkout([$class: 'GitSCM', branches: [[name: "${env.tag}" ]], userRemoteConfigs: [[url: "${env.repository}" ]]])
     }
 
     withCredentials([string(credentialsId: 'jenkins-opensearch-publish-to-npm-token', variable: 'NPM_TOKEN')]) {
@@ -32,5 +37,8 @@ void call(Map args = [:]) {
             npm publish ${artifactPath} --dry-run
             npm publish ${artifactPath} --access public
         """
+    println('Cleaning up')
+    sh """rm -rf ${WORKSPACE}/.nvmrc && ls -a ~/ | grep .nvmrc"""
     }
 }
+
