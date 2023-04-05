@@ -38,7 +38,7 @@ void call(Map args = [:]) {
             npm publish ${artifactPath} --access public
         """
     println('Cleaning up')
-    sh """rm -rf ${WORKSPACE}/.nvmrc && ls -a ~/ | grep .nvmrc"""
+    sh """rm -rf ${WORKSPACE}/.nvmrc && rm -rf ~/.nvmrc"""
     }
 }
 
