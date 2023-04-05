@@ -12,7 +12,8 @@
 @param args.publicationType - github or artifact
 @param args.artifactPath <required if publicationType=artifact> - Artifact path to publish to NPM. Defaults to package.json See supported artifacts https://docs.npmjs.com/cli/v9/commands/npm-publish?v=true#description for more details.
 */
-void call(Map args = [:]) {
+void call(env, Map args = [:]) {
+    body.delegate = [env: env]
     allowedPublicationType = ['github', 'artifact']
     artifactPath = args.artifactPath ?: ''
 
@@ -25,8 +26,7 @@ void call(Map args = [:]) {
         error('publicationType: artifact needs an artifactPath. Please provide artifactPath argument. See supported artifacts https://docs.npmjs.com/cli/v9/commands/npm-publish?v=true#description for more details')
     }
     if (args.publicationType == 'github') {
-        echo 'Rep details: ' "$repository" "$tag"
-        checkout([$class: 'GitSCM', branches: [[name: "$tag" ]], userRemoteConfigs: [[url: "$repository" ]]])
+        checkout([$class: 'GitSCM', branches: [[name: "$env.tag" ]], userRemoteConfigs: [[url: "$env.repository" ]]])
     }
 
     withCredentials([string(credentialsId: 'jenkins-opensearch-publish-to-npm-token', variable: 'NPM_TOKEN')]) {
