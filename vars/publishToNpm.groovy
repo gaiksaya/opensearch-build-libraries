@@ -13,8 +13,13 @@
 @param args.artifactPath <required if publicationType=artifact> - Artifact path to publish to NPM. Defaults to package.json See supported artifacts https://docs.npmjs.com/cli/v9/commands/npm-publish?v=true#description for more details.
 */
 void call(Map args = [:]) {
+    allowedPublicationType = ['github', 'artifact']
     artifactPath = args.artifactPath ?: ''
 
+    if (!allowedPublicationType.contains(args.publicationType)) {
+        currentBuild.result = 'ABORTED'
+        error('Invalid publicationType. publicationType can either be github or artifact')
+    }
     if (args.publicationType == 'artifact' && !args.artifactPath) {
         currentBuild.result = 'ABORTED'
         error('publicationType: artifact needs an artifactPath. Please provide artifactPath argument. See supported artifacts https://docs.npmjs.com/cli/v9/commands/npm-publish?v=true#description for more details')
