@@ -9,19 +9,17 @@
 
 /** Library to publish artifacts to NPM registry under @opensearch-project namespace.
 @param Map args = [:] args A map of the following parameters
-@param args.repository <required> - Repository to be used to publish the artifact to npm.
-@param args.tag <required> - Tag reference to be used to publish the artifact.
-OR
-@param args.artifactPath <required> - Artifact path to publish to NPM. Defaults to package.json See supported artifacts https://docs.npmjs.com/cli/v9/commands/npm-publish?v=true#description for more details.
+@param args.publicationType - github or artifact
+@param args.artifactPath <required if publicationType=artifact> - Artifact path to publish to NPM. Defaults to package.json See supported artifacts https://docs.npmjs.com/cli/v9/commands/npm-publish?v=true#description for more details.
 */
 void call(Map args = [:]) {
     artifactPath = args.artifactPath ?: ''
 
-    if (args.artifactPath && args.repository && args.tag) {
+    if (args.publicationType == 'artifact' && !args.artifactPath) {
         currentBuild.result = 'ABORTED'
-        error('Artifact Path and GitHub repository details are mutually exclusive. Please use either repository and tag OR artifactPath as arguments')
+        error('publicationType: artifact needs an artifactPath. Please provide artifactPath argument. See supported artifacts https://docs.npmjs.com/cli/v9/commands/npm-publish?v=true#description for more details')
     }
-    if (!args.artifactPath) {
+    if (args.publicationType == 'github') {
         checkout([$class: 'GitSCM', branches: [[name: "${args.tag}" ]], userRemoteConfigs: [[url: "${args.repository}" ]]])
     }
 
@@ -29,8 +27,10 @@ void call(Map args = [:]) {
         sh """
             npm set registry "https://registry.npmjs.org"
             npm set //registry.npmjs.org/:_authToken ${NPM_TOKEN}
-            npm publish ${artifactPath} --dry-run
-            npm publish ${artifactPath} --access public
+            npm publish ${artifactPath} --dry-run && npm publish ${artifactPath} --access public
         """
     }
+
+    println('Cleaning up')
+    sh """rm -rf ${WORKSPACE}/.nvmrc && ls -a ~/ | grep .nvmrc"""
 }
