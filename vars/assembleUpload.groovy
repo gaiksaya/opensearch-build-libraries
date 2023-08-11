@@ -11,5 +11,5 @@ void call(Map args = [:]) {
     lib = library(identifier: 'jenkins@main', retriever: legacySCM(scm))
 
     assembleManifest(args)
-    uploadArtifacts(args)
+    // uploadArtifacts(args)
 }
