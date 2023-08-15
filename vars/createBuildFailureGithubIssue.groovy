@@ -14,6 +14,7 @@
 void call(Map args = [:]) {
     lib = library(identifier: 'jenkins@main', retriever: legacySCM(scm))
     def failureMessages = args.message
+    println('Messages are:', failureMessages)
     List<String> failedComponents = []
 
     if (failureMessages.size() == 1 && failureMessages[0] == null) {
