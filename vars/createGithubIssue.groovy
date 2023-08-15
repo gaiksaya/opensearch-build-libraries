@@ -19,10 +19,15 @@ void call(Map args = [:]) {
     try {
         withCredentials([usernamePassword(credentialsId: 'jenkins-github-bot-token', passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USER')]) {
             println('Listing issues now!')
+            println("Repo URL: $args.repoUrl")
+            println("Issue title: $args.issueTitle")
+            println("Label: $label")
+            println("Script: gh issue list --repo ${args.repoUrl} -S \"${args.issueTitle} in:title\" --label ${label}")
             def issues = sh(
                     script: "gh issue list --repo ${args.repoUrl} -S \"${args.issueTitle} in:title\" --label ${label}",
                     returnStdout: true
             )
+            println("Issue value: $issues")
             if (issues) {
                 println('Issue already exists, adding a comment.')
                 def issuesNumber = sh(
