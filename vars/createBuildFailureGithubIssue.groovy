@@ -17,7 +17,7 @@ void call(Map args = [:]) {
     echo "Messages are: :$failureMessages"
     List<String> failedComponents = []
 
-    if (failureMessages.size() == 1 && failureMessages[0] == null) {
+    if (failureMessages == null) {
         println('No component failed, skip creating github issue.')
     }
     else {
