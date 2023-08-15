@@ -45,6 +45,7 @@ void call(Map args = [:]) {
                 ghIssueBody = """***Received Error***: **${failureMessages[compIndex]}**.
                       The distribution build for ${component.name} has failed for version: ${currentVersion}.
                       Please see build log at ${BUILD_URL}consoleFull""".stripIndent()
+                println("Calling createGithubIssue now!!")
                 createGithubIssue(
                     repoUrl: component.repository,
                     issueTitle: "[AUTOCUT] Distribution Build Failed for ${component.name}-${currentVersion}",

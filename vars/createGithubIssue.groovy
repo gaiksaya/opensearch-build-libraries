@@ -18,6 +18,7 @@ void call(Map args = [:]) {
     label = args.label ?: 'autocut'
     try {
         withCredentials([usernamePassword(credentialsId: 'jenkins-github-bot-token', passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USER')]) {
+            println('Listing issues now!')
             def issues = sh(
                     script: "gh issue list --repo ${args.repoUrl} -S \"${args.issueTitle} in:title\" --label ${label}",
                     returnStdout: true
