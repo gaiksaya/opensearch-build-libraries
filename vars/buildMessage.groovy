@@ -31,7 +31,7 @@ def call(Map args = [:]){
     }
     //if no match returns as Build failed
     if(message.isEmpty()){
-        echo "The search $QUERY_STRING not identified in build log"
+        // echo "No such query string found"
         message = null
     }
     return message
