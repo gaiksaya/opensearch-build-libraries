@@ -27,13 +27,27 @@ class TestManifest {
             this.image = new TestManifest.Ci.Image(data.image)
         }
     }
+    class Components extends HashMap<String, Component> {
 
+        Components(ArrayList data) {
+            data.each { item ->
+                Component component = new Component(item)
+                this[component.name] = component
+            }
+        }
+    }
     String name
-
     Ci ci
+    Components components
 
     TestManifest(Map data) {
         this.name = data.name
         this.ci = data.ci ? new TestManifest.Ci(data.ci) : null
+        this.components = new TestManifest.Components(data.components)
+    }
+    public ArrayList getNames() {
+        def componentsName = []
+        this.components.each{key, value -> componentsName.add(key)}
+        return componentsName
     }
 }
