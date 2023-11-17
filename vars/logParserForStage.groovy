@@ -51,7 +51,8 @@ import java.util.stream.Collectors
     static private boolean isNamedStageStartNode(FlowNode node) {
         return Objects.equals(((StepStartNode) node).getStepName(), "Stage") && !Objects.equals(node.getDisplayFunctionName(), "stage");
     }
-
+    
+    @NonCPS
     def call(Map args = [:]){
         List<String> stageLogs = collectLogsForStage(currentBuild.rawBuild, args.stageName)
         return stageLogs
