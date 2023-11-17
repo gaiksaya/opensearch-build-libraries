@@ -30,6 +30,7 @@ String getFlowNodeStage(FlowNode flowNode) {
 // Collect logs of each flow node that belongs to stage
 @NonCPS
 List<String> collectLogsForStage(String stageName) {
+    println(currentBuild.rawBuild)
     currentBuild.rawBuild.save()
     List<String> logs = []
     DepthFirstScanner scanner = new DepthFirstScanner()
