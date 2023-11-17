@@ -17,17 +17,17 @@ void call(Map args = [:]) {
         "--base-url ${baseUrl}"
     ].join(' '))
 
-    if (buildManifest.build.distribution == 'rpm') {
+    // if (buildManifest.build.distribution == 'rpm') {
 
-        signArtifacts(
-            artifactPath: "rpm/dist/${filename}",
-            sigtype: '.rpm',
-            platform: 'linux'
-        )
+    //     signArtifacts(
+    //         artifactPath: "rpm/dist/${filename}",
+    //         sigtype: '.rpm',
+    //         platform: 'linux'
+    //     )
 
-        buildYumRepo(
-            baseUrl: baseUrl,
-            buildManifest: args.buildManifest
-        )
-    }
+    //     buildYumRepo(
+    //         baseUrl: baseUrl,
+    //         buildManifest: args.buildManifest
+    //     )
+    // }
 }
