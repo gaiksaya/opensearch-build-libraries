@@ -10,8 +10,8 @@ import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import java.util.stream.Collectors
 
 @NonCPS
-def call(Map args = [:]){
-    List<String> stageLogs = collectLogsForStage(currentBuild.rawBuild, args.stageName)
+def call(Map args = [:]) {
+    List<String> stageLogs = collectLogsForStage(args.stageName)
 }
 // Recursively check flowNode parents until we find a stage
 @NonCPS
@@ -29,12 +29,12 @@ String getFlowNodeStage(FlowNode flowNode) {
 
 // Collect logs of each flow node that belongs to stage
 @NonCPS
-List<String> collectLogsForStage(WorkflowRun run, String stageName) {
-    run.save()
+List<String> collectLogsForStage(String stageName) {
+    currentBuild.rawBuild.save()
     List<String> logs = []
     DepthFirstScanner scanner = new DepthFirstScanner()
 
-    scanner.setup(run.getExecution().getCurrentHeads())
+    scanner.setup(currentBuild.rawBuild.getExecution().getCurrentHeads())
 
     for (FlowNode flowNode : scanner) {
         // Skip flow nodes that are not part of a requested stage
