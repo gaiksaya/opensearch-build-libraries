@@ -200,6 +200,7 @@ class BuildManifest implements Serializable {
     }
 
     public String getRepo(String name) {
+        println('Component name is '+ name)
         return this.components.get(name).repository
     }
 
