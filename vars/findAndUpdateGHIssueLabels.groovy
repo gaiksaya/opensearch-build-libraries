@@ -50,7 +50,7 @@ def getActionParam(String action) {
 }
 
 def verifyAndCreateMissingLabels(String label){
-    List<String> allLabels = Arrays.asList(label.split(", "));
+    List<String> allLabels = Arrays.asList(label.split(","));
     println('Verifying labels')
     allLabels.each { i ->
         try {
