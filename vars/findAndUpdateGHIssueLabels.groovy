@@ -18,28 +18,26 @@ void call(Map args = [:]) {
     action = getActionParam(args.action)
     try {
         withCredentials([usernamePassword(credentialsId: 'jenkins-github-bot-token', passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USER')]) {
-            if (args.action == 'add') {
-                verifyAndCreateMissingLabels(args.label, args.repoUrl)
-            }
+            def labelExists = verifyAndCreateMissingLabels(args)
             def issueNumber = sh(
                     script: "gh issue list --repo ${args.repoUrl} -S \"${args.issueTitle} in:title\" --json number --jq '.[0].number'",
                     returnStdout: true
             ).trim()
             if (!issueNumber.isEmpty()) {
-                sh(
-                        script: "gh issue edit ${issueNumber} -R ${args.repoUrl} ${action} \"${args.label}\"",
-                        returnStdout: true
-                )
+                if (labelExists) {
+                    sh(
+                            script: "gh issue edit ${issueNumber} -R ${args.repoUrl} ${action} \"${args.label}\"",
+                            returnStdout: true
+                    )
+                } else {
+                    println('Label does not exist. SKipping the action.')
+                }
             } else {
                 println("No open issues found for ${args.repoUrl}")
             }
         }
     } catch (Exception ex) {
-        if (args.action == 'remove') {
-            println('Label does not exist, skipping the removal')
-        } else {
-            error("Unable to edit GitHub issue for ${args.repoUrl}", ex.getMessage())
-        }
+        error("Unable to edit GitHub issue for ${args.repoUrl}", ex.getMessage())
     }
 }
 
@@ -53,21 +51,26 @@ def getActionParam(String action) {
     }
 }
 
-def verifyAndCreateMissingLabels(String label, String repoUrl) {
-    List<String> allLabels = Arrays.asList(label.split(','))
-    println("Verifying labels: ${allLabels}")
+def verifyAndCreateMissingLabels(args) {
+    List<String> allLabels = Arrays.asList(args.label.split(','))
     allLabels.each { i ->
         try {
             def name = sh(
-                    script: "gh label list --repo ${repoUrl} -S ${i} --json name --jq '.[0].name'",
+                    script: "gh label list --repo ${args.repoUrl} -S ${i} --json name --jq '.[0].name'",
                     returnStdout: true
                 )
             if (name != i) {
-                println("${i} label is missing. Creating the missing label")
-                sh(
-                    script: "gh label create ${i} --repo ${repoUrl}",
-                    returnStdout: true
-                )
+                if (args.action == 'add') {
+                    println("${i} label is missing. Creating the missing label")
+                    sh(
+                        script: "gh label create ${i} --repo ${args.repoUrl}",
+                        returnStdout: true
+                    )
+                    return true
+                } else {
+                    println("Label ${i} does not exist. Skipping label creation.")
+                    return false
+                }
             }
         } catch (Exception ex) {
             error("Unable to create GitHub label for ${args.repoUrl}", ex.getMessage())
