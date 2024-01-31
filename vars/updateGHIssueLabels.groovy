@@ -49,7 +49,7 @@ def addAction(args, issueNumber) {
                     script: "gh label list --repo ${args.repoUrl} -S ${i} --json name --jq '.[0].name'",
                     returnStdout: true
                 )
-            if (name != i) {
+            if ("${name}" != "${i}") {
                 println("${i} label is missing. Creating the missing label")
                 sh(
                     script: "gh label create ${i} --repo ${args.repoUrl}",
@@ -76,7 +76,7 @@ def removeAction(args, issueNumber){
                     script: "gh label list --repo ${args.repoUrl} -S ${i} --json name --jq '.[0].name'",
                     returnStdout: true
                 )
-            if (name == i) {
+            if ("${name}" == "${i}") {
                 println("Removing label ${i} from the issue")
                 sh(
                     script: "gh issue edit ${issueNumber} -R ${args.repoUrl} --add-label \"${i}\"",
