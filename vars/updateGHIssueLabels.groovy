@@ -50,6 +50,7 @@ def addAction(args, issueNumber) {
                     returnStdout: true
                 )
             println("Value of i is ${i}")
+            println("Value of name is ${name}")
             if ("${name}" != "${i}") {
                 println("${i} label is missing. Creating the missing label")
                 sh(
