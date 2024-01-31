@@ -24,7 +24,7 @@ void call(Map args = [:]) {
                     returnStdout: true
             ).trim()
             if (!issueNumber.isEmpty()) {
-                if (labelExists) {
+                if (labelExists.toBoolean()) {
                     sh(
                             script: "gh issue edit ${issueNumber} -R ${args.repoUrl} ${action} \"${args.label}\"",
                             returnStdout: true
