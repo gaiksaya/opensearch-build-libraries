@@ -16,7 +16,7 @@
  */
 void call(Map args = [:]) {
     action = getActionParam(args.action)
-    List<String> allLabels = getLabels(args.label)
+    List<String> allLabels = getLabels(args)
     try {
         withCredentials([usernamePassword(credentialsId: 'jenkins-github-bot-token', passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USER')]) {
             def issueNumber = sh(
