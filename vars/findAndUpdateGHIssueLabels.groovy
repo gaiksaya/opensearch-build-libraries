@@ -19,7 +19,21 @@ void call(Map args = [:]) {
     try {
         withCredentials([usernamePassword(credentialsId: 'jenkins-github-bot-token', passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USER')]) {
             if (args.action == 'add') {
-                verifyAndCreateMissingLabels(args.label, args.repoUrl)
+            List<String> allLabels = Arrays.asList(label.split(","));
+            println("Verifying labels: ${allLabels}")
+            allLabels.each { i ->
+                    def name = sh(
+                            script: "gh label list --repo ${repoUrl} -S ${i} --json name --jq '.[0].name'",
+                            returnStdout: true
+                        )
+                    if (name !== i) {
+                        println("${i} label is missing. Creating the missing label")
+                        sh(
+                            script: "gh label create ${i} --repo ${repoUrl}",
+                            returnStdout: true
+                        )
+                    }
+                }
             }
             def issueNumber = sh(
                     script: "gh issue list --repo ${args.repoUrl} -S \"${args.issueTitle} in:title\" --json number --jq '.[0].number'",
@@ -46,28 +60,5 @@ def getActionParam(String action) {
         return '--remove-label'
     } else {
         error ('Invalid action specified. Valid input: add or remove')
-    }
-}
-
-@NonCPS
-def verifyAndCreateMissingLabels(String label, String repoUrl){
-    List<String> allLabels = Arrays.asList(label.split(","));
-    println("Verifying labels: ${allLabels}")
-    allLabels.each { i ->
-        try {
-            def name = sh(
-                    script: "gh label list --repo ${repoUrl} -S ${i} --json name --jq '.[0].name'",
-                    returnStdout: true
-                )
-            if (name !== i) {
-                println("${i} label is missing. Creating the missing label")
-                sh(
-                    script: "gh label create ${i} --repo ${repoUrl}",
-                    returnStdout: true
-                )
-            }
-        } catch (Exception ex) {
-            error("Unable to create GitHub label for ${args.repoUrl}", ex.getMessage())
-        }
     }
 }
