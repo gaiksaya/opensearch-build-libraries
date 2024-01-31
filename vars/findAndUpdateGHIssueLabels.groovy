@@ -16,7 +16,7 @@
  */
 void call(Map args = [:]) {
     action = getActionParam(args.action)
-    labels = getLabels(args.label)
+    List<String> allLabels = getLabels(args.label)
     try {
         withCredentials([usernamePassword(credentialsId: 'jenkins-github-bot-token', passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USER')]) {
             def issueNumber = sh(
@@ -24,7 +24,7 @@ void call(Map args = [:]) {
                     returnStdout: true
             ).trim()
             if (!issueNumber.isEmpty()) {
-                labels.each {
+                allLabels.each {
                     i -> sh(
                             script: "gh issue edit ${issueNumber} -R ${args.repoUrl} ${action} \"${i}\"",
                             returnStdout: true
@@ -50,7 +50,7 @@ def getActionParam(String action) {
 }
 
 def getLabels(args) {
-    actionalLabels = []
+    List<String> actionalLabels = []
     List<String> allLabels = Arrays.asList(args.label.split(','))
     allLabels.each { i ->
         try {
