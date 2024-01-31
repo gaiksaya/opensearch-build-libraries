@@ -18,13 +18,13 @@ void call(Map args = [:]) {
     action = getActionParam(args.action)
     try {
         withCredentials([usernamePassword(credentialsId: 'jenkins-github-bot-token', passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USER')]) {
-            boolean labelExists = verifyAndCreateMissingLabels(args)
+            def labelExists = verifyAndCreateMissingLabels(args)
             def issueNumber = sh(
                     script: "gh issue list --repo ${args.repoUrl} -S \"${args.issueTitle} in:title\" --json number --jq '.[0].number'",
                     returnStdout: true
             ).trim()
             if (!issueNumber.isEmpty()) {
-                if (labelExists) {
+                if (labelExists == true) {
                     sh(
                             script: "gh issue edit ${issueNumber} -R ${args.repoUrl} ${action} \"${args.label}\"",
                             returnStdout: true
