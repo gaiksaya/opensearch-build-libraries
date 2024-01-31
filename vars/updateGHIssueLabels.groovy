@@ -15,6 +15,7 @@
  @param args.action <required> - Either remove or add the given label(s)
  */
 void call(Map args = [:]) {
+    verifyActions(args.action)
     try {
         withCredentials([usernamePassword(credentialsId: 'jenkins-github-bot-token', passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USER')]) {
             def issueNumber = sh(
@@ -30,8 +31,8 @@ void call(Map args = [:]) {
                         removeAction(args, issueNumber)
                         break
                     default:
-                        error("Invalid actions ${args.actions}. Valid values: add, remove")
-                    }
+                        error("Invalid actions ${args.action}. Valid values: add, remove")
+                }
             } else {
                 println("No open issues found for ${args.repoUrl}")
             }
@@ -49,8 +50,6 @@ def addAction(args, issueNumber) {
                     script: "gh label list --repo ${args.repoUrl} -S ${i} --json name --jq '.[0].name'",
                     returnStdout: true
                 ).trim()
-            println("Value of i is ${i}, length = ${i.length()}")
-            println("Value of name is ${name}, length = ${name.length()}")
             if (name.equals(i.trim())) {
                 println("Label ${i} already exists. Adding it to the issue")
             } else {
@@ -60,6 +59,7 @@ def addAction(args, issueNumber) {
                     returnStdout: true
                 )
             }
+            println("Adding ${i} label to the issue")
             sh(
                 script: "gh issue edit ${issueNumber} -R ${args.repoUrl} --add-label \"${i}\"",
                 returnStdout: true
@@ -91,5 +91,12 @@ def removeAction(args, issueNumber){
         } catch (Exception ex) {
             error("Unable to remove GitHub label for ${args.repoUrl}", ex.getMessage())
         }
+    }
+}
+
+def verifyActions(String action) {
+    acceptableActions = ['add', 'remove']
+    if (!acceptableActions.consists(action)){
+        error("Invalid actions ${action} specified. Valid values: add, remove")
     }
 }
