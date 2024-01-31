@@ -76,6 +76,7 @@ def removeAction(args, issueNumber){
                     script: "gh label list --repo ${args.repoUrl} -S ${i} --json name --jq '.[0].name'",
                     returnStdout: true
                 )
+            println("Value of i is ${i}")
             if ("${name}" == "${i}") {
                 println("Removing label ${i} from the issue")
                 sh(
