@@ -48,10 +48,10 @@ def addAction(args, issueNumber) {
             def name = sh(
                     script: "gh label list --repo ${args.repoUrl} -S ${i} --json name --jq '.[0].name'",
                     returnStdout: true
-                )
+                ).trim()
             println("Value of i is ${i}, length = ${i.length()}")
             println("Value of name is ${name}, length = ${name.length()}")
-            if (name.trim().equals(i.trim())) {
+            if (name.equals(i.trim())) {
                 println("Label ${i} already exists. Adding it to the issue")
             } else {
                 println("${i} label is missing. Creating the missing label")
@@ -77,9 +77,9 @@ def removeAction(args, issueNumber){
             def name = sh(
                     script: "gh label list --repo ${args.repoUrl} -S ${i} --json name --jq '.[0].name'",
                     returnStdout: true
-                )
+                ).trim()
             println("Value of i is ${i}")
-            if (name.trim().equals(i.trim())) {
+            if (name.equals(i.trim())) {
                 println("Removing label ${i} from the issue")
                 sh(
                     script: "gh issue edit ${issueNumber} -R ${args.repoUrl} --remove-label \"${i}\"",
