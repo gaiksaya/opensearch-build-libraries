@@ -16,9 +16,9 @@
  */
 void call(Map args = [:]) {
     action = getActionParam(args.action)
-    List<String> allLabels = getLabels(args)
     try {
         withCredentials([usernamePassword(credentialsId: 'jenkins-github-bot-token', passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USER')]) {
+            List<String> allLabels = getLabels(args)
             def issueNumber = sh(
                     script: "gh issue list --repo ${args.repoUrl} -S \"${args.issueTitle} in:title\" --json number --jq '.[0].number'",
                     returnStdout: true
