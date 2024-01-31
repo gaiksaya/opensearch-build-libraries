@@ -96,7 +96,7 @@ def removeAction(args, issueNumber){
 
 def verifyActions(String action) {
     acceptableActions = ['add', 'remove']
-    if (!acceptableActions.consists(action)){
+    if (!acceptableActions.contains(action)){
         error("Invalid actions ${action} specified. Valid values: add, remove")
     }
 }
