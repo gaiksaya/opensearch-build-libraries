@@ -35,7 +35,11 @@ void call(Map args = [:]) {
             }
         }
     } catch (Exception ex) {
-        error("Unable to edit GitHub issue for ${args.repoUrl}", ex.getMessage())
+        if (args.action == 'remove') {
+            println('Label does not exist, skipping the removal')
+        } else {
+            error("Unable to edit GitHub issue for ${args.repoUrl}", ex.getMessage())
+        }
     }
 }
 
@@ -45,12 +49,12 @@ def getActionParam(String action) {
     } else if (action == 'remove') {
         return '--remove-label'
     } else {
-        error ('Invalid action specified. Valid input: add or remove')
+        error('Invalid action specified. Valid input: add or remove')
     }
 }
 
-def verifyAndCreateMissingLabels(String label, String repoUrl){
-    List<String> allLabels = Arrays.asList(label.split(","));
+def verifyAndCreateMissingLabels(String label, String repoUrl) {
+    List<String> allLabels = Arrays.asList(label.split(','))
     println("Verifying labels: ${allLabels}")
     allLabels.each { i ->
         try {
