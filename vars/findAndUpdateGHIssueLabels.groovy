@@ -51,7 +51,7 @@ def getActionParam(String action) {
 
 def verifyAndCreateMissingLabels(String label, String repoUrl){
     List<String> allLabels = Arrays.asList(label.split(","));
-    println('Verifying labels')
+    println("Verifying labels: ${allLabels}")
     allLabels.each { i ->
         try {
             def name = sh(
