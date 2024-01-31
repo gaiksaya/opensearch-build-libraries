@@ -45,7 +45,7 @@ def getActionParam(String action) {
     } else if (action == 'remove') {
         return '--remove-label'
     } else {
-        error ('Invalid action. Valid input: add or remove')
+        error ('Invalid action specified. Valid input: add or remove')
     }
 }
 
@@ -54,16 +54,19 @@ def verifyAndCreateMissingLabels(String label, String repoUrl){
     println('Verifying labels')
     allLabels.each { i ->
         try {
-            sh(
-                script: "gh label list --repo ${repoUrl} -S ${i}",
-                returnStdout: true
-            )
+            def labelName = sh(
+                    script: "gh label list --repo ${repoUrl} -S ${i} --json name --jq '.[0].name'",
+                    returnStdout: true
+                )
+            if (labelName !== i) {
+                println("${i} label is missing. Creating the missing label")
+                sh(
+                    script: "gh label create ${i} --repo ${repoUrl}",
+                    returnStdout: true
+                )
+            }
         } catch (Exception ex) {
-            println("${i} label is missing. Creating the missing label")
-            sh(
-                script: "gh label create ${i} --repo ${repoUrl}",
-                returnStdout: true
-            )
+            error("Unable to create GitHub label for ${args.repoUrl}", ex.getMessage())
         }
     }
 }
