@@ -51,7 +51,7 @@ def addAction(args, issueNumber) {
                 )
             println("Value of i is ${i}, length = ${i.length()}")
             println("Value of name is ${name}, length = ${name.length()}")
-            if ("${name}" == "${i}") {
+            if (name.trim().equals(i.trim())) {
                 println("Label ${i} already exists. Adding it to the issue")
             } else {
                 println("${i} label is missing. Creating the missing label")
@@ -79,7 +79,7 @@ def removeAction(args, issueNumber){
                     returnStdout: true
                 )
             println("Value of i is ${i}")
-            if ("${name}" == "${i}") {
+            if (name.trim().equals(i.trim())) {
                 println("Removing label ${i} from the issue")
                 sh(
                     script: "gh issue edit ${issueNumber} -R ${args.repoUrl} --add-label \"${i}\"",
