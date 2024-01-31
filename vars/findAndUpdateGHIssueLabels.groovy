@@ -49,6 +49,7 @@ def getActionParam(String action) {
     }
 }
 
+@NonCPS
 def verifyAndCreateMissingLabels(String label, String repoUrl){
     List<String> allLabels = Arrays.asList(label.split(","));
     println("Verifying labels: ${allLabels}")
