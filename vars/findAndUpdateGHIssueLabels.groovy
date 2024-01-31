@@ -16,22 +16,20 @@
  */
 void call(Map args = [:]) {
     action = getActionParam(args.action)
+    labels = getLabels(args.label)
     try {
         withCredentials([usernamePassword(credentialsId: 'jenkins-github-bot-token', passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USER')]) {
-            def labelExists = verifyAndCreateMissingLabels(args)
             def issueNumber = sh(
                     script: "gh issue list --repo ${args.repoUrl} -S \"${args.issueTitle} in:title\" --json number --jq '.[0].number'",
                     returnStdout: true
             ).trim()
             if (!issueNumber.isEmpty()) {
-                if (labelExists == true) {
-                    sh(
-                            script: "gh issue edit ${issueNumber} -R ${args.repoUrl} ${action} \"${args.label}\"",
+                labels.each {
+                    i -> sh(
+                            script: "gh issue edit ${issueNumber} -R ${args.repoUrl} ${action} \"${i}\"",
                             returnStdout: true
-                    )
-                } else {
-                    println('Label does not exist. SKipping the action.')
-                }
+                        )
+                    }
             } else {
                 println("No open issues found for ${args.repoUrl}")
             }
@@ -51,7 +49,8 @@ def getActionParam(String action) {
     }
 }
 
-def verifyAndCreateMissingLabels(args) {
+def getLabels(args) {
+    actionalLabels = []
     List<String> allLabels = Arrays.asList(args.label.split(','))
     allLabels.each { i ->
         try {
@@ -66,12 +65,12 @@ def verifyAndCreateMissingLabels(args) {
                         script: "gh label create ${i} --repo ${args.repoUrl}",
                         returnStdout: true
                     )
-                    return true
+                    actionalLabels.add(i)
                 } else {
-                    println("Label ${i} does not exist. Skipping label creation.")
-                    return false
+                    println("Label ${i} does not exist. Skipping the label.")
                 }
             }
+            return actionableLabels
         } catch (Exception ex) {
             error("Unable to create GitHub label for ${args.repoUrl}", ex.getMessage())
         }
