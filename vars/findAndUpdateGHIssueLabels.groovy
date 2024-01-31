@@ -19,7 +19,7 @@ void call(Map args = [:]) {
     try {
         withCredentials([usernamePassword(credentialsId: 'jenkins-github-bot-token', passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USER')]) {
             if (args.action == 'add') {
-                verifyAndCreateMissingLabels(args.label)
+                verifyAndCreateMissingLabels(args.label, args.repoUrl)
             }
             def issueNumber = sh(
                     script: "gh issue list --repo ${args.repoUrl} -S \"${args.issueTitle} in:title\" --json number --jq '.[0].number'",
@@ -49,19 +49,19 @@ def getActionParam(String action) {
     }
 }
 
-def verifyAndCreateMissingLabels(String label){
+def verifyAndCreateMissingLabels(String label, String repoUrl){
     List<String> allLabels = Arrays.asList(label.split(","));
     println('Verifying labels')
     allLabels.each { i ->
         try {
             sh(
-                script: "gh label list --repo ${args.repoUrl} -S ${i}",
+                script: "gh label list --repo ${repoUrl} -S ${i}",
                 returnStdout: true
             )
         } catch (Exception ex) {
             println("${i} label is missing. Creating the missing label")
             sh(
-                script: "gh label create ${i} --repo ${args.repoUrl}",
+                script: "gh label create ${i} --repo ${repoUrl}",
                 returnStdout: true
             )
         }
