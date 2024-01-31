@@ -82,7 +82,7 @@ def removeAction(args, issueNumber){
             if (name.trim().equals(i.trim())) {
                 println("Removing label ${i} from the issue")
                 sh(
-                    script: "gh issue edit ${issueNumber} -R ${args.repoUrl} --add-label \"${i}\"",
+                    script: "gh issue edit ${issueNumber} -R ${args.repoUrl} --remove-label \"${i}\"",
                     returnStdout: true
                 )
             } else {
