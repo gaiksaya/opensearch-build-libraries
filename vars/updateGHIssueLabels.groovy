@@ -49,8 +49,8 @@ def addAction(args, issueNumber) {
                     script: "gh label list --repo ${args.repoUrl} -S ${i} --json name --jq '.[0].name'",
                     returnStdout: true
                 )
-            println("Value of i is ${i}")
-            println("Value of name is ${name}")
+            println("Value of i is ${i}, length = ${i.length()}")
+            println("Value of name is ${name}, length = ${name.length()}")
             if ("${name}" == "${i}") {
                 println("Label ${i} already exists. Adding it to the issue")
             } else {
