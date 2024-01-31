@@ -49,6 +49,7 @@ def addAction(args, issueNumber) {
                     script: "gh label list --repo ${args.repoUrl} -S ${i} --json name --jq '.[0].name'",
                     returnStdout: true
                 )
+            println("Value of i is ${i}")
             if ("${name}" != "${i}") {
                 println("${i} label is missing. Creating the missing label")
                 sh(
