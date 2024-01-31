@@ -70,6 +70,7 @@ def getLabels(args) {
                     println("Label ${i} does not exist. Skipping the label.")
                 }
             }
+            println('Array is, '+ actionableLabels)
             return actionableLabels
         } catch (Exception ex) {
             error("Unable to create GitHub label for ${args.repoUrl}", ex.getMessage())
