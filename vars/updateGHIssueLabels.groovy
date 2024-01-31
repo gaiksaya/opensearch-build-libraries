@@ -51,7 +51,7 @@ def addAction(args, issueNumber) {
                 )
             println("Value of i is ${i}")
             println("Value of name is ${name}")
-            if (name == i) {
+            if ("${name}" == "${i}") {
                 println("Label ${i} already exists. Adding it to the issue")
             } else {
                 println("${i} label is missing. Creating the missing label")
