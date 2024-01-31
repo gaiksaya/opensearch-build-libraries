@@ -50,7 +50,7 @@ def getActionParam(String action) {
 }
 
 def getLabels(args) {
-    List<String> actionalLabels = []
+    List<String> actionableLabels = []
     List<String> allLabels = Arrays.asList(args.label.split(','))
     allLabels.each { i ->
         try {
@@ -65,7 +65,7 @@ def getLabels(args) {
                         script: "gh label create ${i} --repo ${args.repoUrl}",
                         returnStdout: true
                     )
-                    actionalLabels.add(i)
+                    actionableLabels.add(i)
                 } else {
                     println("Label ${i} does not exist. Skipping the label.")
                 }
