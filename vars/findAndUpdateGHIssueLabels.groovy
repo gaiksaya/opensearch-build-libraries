@@ -54,11 +54,11 @@ def verifyAndCreateMissingLabels(String label, String repoUrl){
     println('Verifying labels')
     allLabels.each { i ->
         try {
-            def labelName = sh(
+            def name = sh(
                     script: "gh label list --repo ${repoUrl} -S ${i} --json name --jq '.[0].name'",
                     returnStdout: true
                 )
-            if (labelName !== i) {
+            if (name !== i) {
                 println("${i} label is missing. Creating the missing label")
                 sh(
                     script: "gh label create ${i} --repo ${repoUrl}",
