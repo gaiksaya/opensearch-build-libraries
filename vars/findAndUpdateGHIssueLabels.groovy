@@ -69,6 +69,8 @@ def getLabels(args) {
                 } else {
                     println("Label ${i} does not exist. Skipping the label.")
                 }
+            } else {
+                actionableLabels.add(i)
             }
             println('Array is, '+ actionableLabels)
             return actionableLabels
