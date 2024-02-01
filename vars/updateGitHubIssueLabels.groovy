@@ -31,7 +31,7 @@ void call(Map args = [:]) {
                         removeAction(args, issueNumber)
                         break
                     default:
-                        error("Invalid actions ${args.action}. Valid values: add, remove")
+                        error("Invalid action '${args.action}'. Valid values: add, remove")
                 }
             } else {
                 println("No open issues found for ${args.repoUrl}")
@@ -78,7 +78,6 @@ def removeAction(args, issueNumber){
                     script: "gh label list --repo ${args.repoUrl} -S ${i} --json name --jq '.[0].name'",
                     returnStdout: true
                 ).trim()
-            println("Value of i is ${i}")
             if (name.equals(i.trim())) {
                 println("Removing label ${i} from the issue")
                 sh(
@@ -97,6 +96,6 @@ def removeAction(args, issueNumber){
 def verifyActions(String action) {
     acceptableActions = ['add', 'remove']
     if (!acceptableActions.contains(action)){
-        error("Invalid actions ${action} specified. Valid values: add, remove")
+        error("Invalid action '${action}' specified. Valid values: add, remove")
     }
 }
