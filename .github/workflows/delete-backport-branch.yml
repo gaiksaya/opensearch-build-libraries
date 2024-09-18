@@ -10,7 +10,7 @@
       runs-on: ubuntu-latest
       permissions:
         contents: write
-      if: startsWith(github.event.pull_request.head.ref,'backport/')
+      if: startsWith(github.event.pull_request.head.ref,'2.x')
       steps:
         - name: Delete branch
           uses: actions/github-script@v5
