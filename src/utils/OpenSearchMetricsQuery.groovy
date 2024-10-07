@@ -9,7 +9,7 @@
 
 package utils
 
-import groovy.json.JsonSlurperClassic
+import groovy.json.JsonSlurper
 
 class OpenSearchMetricsQuery {
     String metricsUrl
@@ -37,6 +37,6 @@ class OpenSearchMetricsQuery {
         """,
         returnStdout: true
         ).trim()
-        return new JsonSlurperClassic().parseText(response)
+        return new JsonSlurper().parseText(response)
     }
 }
