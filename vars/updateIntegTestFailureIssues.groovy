@@ -15,8 +15,8 @@
 import jenkins.ComponentBuildStatus
 import jenkins.ComponentIntegTestStatus
 import jenkins.CreateIntegTestMarkDownTable
-import groovy.json.JsonOutput
 
+@NonCPS
 void call(Map args = [:]) {
     def inputManifest = readYaml(file: args.inputManifestPath)
     def version = inputManifest.build.version
@@ -49,8 +49,7 @@ void call(Map args = [:]) {
             println("Integration test failed for ${component.name}, creating github issue")
             def testData = []
             def queryData = componentIntegTestStatus.getComponentIntegTestFailedData(component.name)
-            def queryDataJSON = JsonOutput.toJson(queryData)
-            def totalHits = queryDataJSON.hits.hits.collect {it._source}
+            def totalHits = queryData.hits.hits.collect {it._source}
             totalHits.each { hit ->
              def rowData = [
                 platform : hit.platform,
