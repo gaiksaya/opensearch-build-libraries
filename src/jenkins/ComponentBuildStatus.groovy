@@ -94,6 +94,7 @@ class ComponentBuildStatus {
                 ]
         ]
         def query = JsonOutput.toJson(queryMap)
+        this.script.println(query)
         return query.replace('"', '\\"')
     }
 
@@ -128,7 +129,6 @@ class ComponentBuildStatus {
                 ]
         ]
         def query = JsonOutput.toJson(queryMap)
-        this.script.println(query.replace('"', '\\"'))
         return query.replace('"', '\\"')
     }
 
