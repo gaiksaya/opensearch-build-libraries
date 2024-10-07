@@ -47,7 +47,7 @@ void call(Map args = [:]) {
         if (failedComponents.contains(component.name)) {
             println("Integration test failed for ${component.name}, creating github issue")
             def testData = []
-            def queryData = componentIntegTestStatus.getComponentIntegTestFailedData(component.name)
+            def queryData = componentIntegTestStatus.getComponentIntegTestFailedData(component.name) as Map
             println("Query Data: ${queryData.getClass().getName()}")
             def totalHits = queryData.hits.hits.collect {it._source}
             println("totalHits Data: ${totalHits.getClass().getName()}")
