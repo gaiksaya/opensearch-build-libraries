@@ -62,13 +62,13 @@ void call(Map args = [:]) {
             def markdownContent = new CreateIntegTestMarkDownTable(version, testData).create()
             println(markdownContent)
             writeFile file: "failedTest.md", text: markdownContent
-            createGithubIssue(
-                repoUrl: component.repository,
-                issueTitle: "[AUTOCUT] Integration Test Failed for ${component.name}-${version}",
-                issueBodyFile: "failedTest.md",
-                label: "autocut,v${version}",
-                issueEdit: true
-            )
+            // createGithubIssue(
+            //     repoUrl: component.repository,
+            //     issueTitle: "[AUTOCUT] Integration Test Failed for ${component.name}-${version}",
+            //     issueBodyFile: "failedTest.md",
+            //     label: "autocut,v${version}",
+            //     issueEdit: true
+            // )
         }
         if (passedComponents.contains(component.name) && !failedComponents.contains(component.name)) {
             println("Integration tests passed for ${component.name}, closing github issue")
