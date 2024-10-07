@@ -50,6 +50,7 @@ void call(Map args = [:]) {
             def testData = []
             def queryData = componentIntegTestStatus.getComponentIntegTestFailedData(component.name)
             def queryDataJson = JsonOutput.toJson(queryData)
+            println(queryDataJson)
             println("Query Data: ${queryData.getClass().getName()}")
             println("Query Data: ${queryDataJson.getClass().getName()}")
             def totalHits = queryDataJson.hits.hits.collect {it._source}
