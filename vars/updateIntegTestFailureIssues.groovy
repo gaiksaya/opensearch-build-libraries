@@ -15,6 +15,7 @@
 import jenkins.ComponentBuildStatus
 import jenkins.ComponentIntegTestStatus
 import jenkins.CreateIntegTestMarkDownTable
+import groovy.json.JsonOutput
 
 void call(Map args = [:]) {
     def inputManifest = readYaml(file: args.inputManifestPath)
@@ -47,9 +48,11 @@ void call(Map args = [:]) {
         if (failedComponents.contains(component.name)) {
             println("Integration test failed for ${component.name}, creating github issue")
             def testData = []
-            def queryData = componentIntegTestStatus.getComponentIntegTestFailedData(component.name) as Map
+            def queryData = componentIntegTestStatus.getComponentIntegTestFailedData(component.name)
+            def queryDataJson = JsonOutput.toJson(queryData)
             println("Query Data: ${queryData.getClass().getName()}")
-            def totalHits = queryData.hits.hits.collect {it._source}
+            println("Query Data: ${queryDataJson.getClass().getName()}")
+            def totalHits = queryDataJson.hits.hits.collect {it._source}
             println("totalHits Data: ${totalHits.getClass().getName()}")
             totalHits.each { hit ->
              def rowData = [
