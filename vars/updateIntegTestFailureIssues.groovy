@@ -51,11 +51,11 @@ void call(Map args = [:]) {
             def totalHits = queryData.hits.hits.collect {it._source}
             totalHits.each { hit ->
              def rowData = [
-                platform : hit.platform,
-                distribution: hit.distribution,
-                architecture: hit.architecture,
-                test_report_manifest_yml: hit.test_report_manifest_yml,
-                integ_test_build_url: hit.integ_test_build_url
+                platform : hit.platform.toString(),
+                distribution: hit.distribution.toString(),
+                architecture: hit.architecture.toString(),
+                test_report_manifest_yml: hit.test_report_manifest_yml.toString(),
+                integ_test_build_url: hit.integ_test_build_url.toString()
              ]
              testData << rowData
             }

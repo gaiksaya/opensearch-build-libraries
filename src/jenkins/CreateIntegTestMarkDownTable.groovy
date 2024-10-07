@@ -29,7 +29,7 @@ class CreateIntegTestMarkDownTable {
 |----------|--------------|--------------|----------------------|--------------|
 """
         def tableRows = this.tableData.collect { row ->
-            "| ${row.platform} | ${row.distribution} | ${row.architecture} | ${row.test_report_manifest_yml} | ${row.integ_test_build_url}"
+            "| ${row.platform.toString()} | ${row.distribution.toString()} | ${row.architecture.toString()} | ${row.test_report_manifest_yml.toString()} | ${row.integ_test_build_url.toString()}"
         }.join("\n")
 
         def additionalInformation = """

@@ -44,8 +44,6 @@ void call(Map args = [:]) {
 
     failedComponents = failedComponents.unique()
     passedComponents = passedComponents.unique()
-    println('Failed components: '+ failedComponents)
-    println('Passed components: '+ passedComponents)
 
     for (component in inputManifest.components) {
         if (failedComponents.contains(component.name)) {
