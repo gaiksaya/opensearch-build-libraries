@@ -48,7 +48,9 @@ void call(Map args = [:]) {
             println("Integration test failed for ${component.name}, creating github issue")
             def testData = []
             def queryData = componentIntegTestStatus.getComponentIntegTestFailedData(component.name)
+            println("Query Data: ${queryData.getClass().getName()}")
             def totalHits = queryData.hits.hits.collect {it._source}
+            println("totalHits Data: ${totalHits.getClass().getName()}")
             totalHits.each { hit ->
              def rowData = [
                 platform : hit.platform.toString(),
@@ -58,8 +60,10 @@ void call(Map args = [:]) {
                 integ_test_build_url: hit.integ_test_build_url.toString()
              ]
              testData << rowData
+            println("rowData: ${rowData.getClass().getName()}")
             }
             def markdownContent = new CreateIntegTestMarkDownTable(version, testData).create()
+            println("markdownContent: ${markdownContent.getClass().getName()}")
             println(markdownContent)
             writeFile file: "failedTest.md", text: markdownContent.toString()
             // createGithubIssue(
