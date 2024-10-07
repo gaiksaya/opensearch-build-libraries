@@ -16,7 +16,6 @@ import jenkins.ComponentBuildStatus
 import jenkins.ComponentIntegTestStatus
 import jenkins.CreateIntegTestMarkDownTable
 
-@NonCPS
 void call(Map args = [:]) {
     def inputManifest = readYaml(file: args.inputManifestPath)
     def version = inputManifest.build.version
