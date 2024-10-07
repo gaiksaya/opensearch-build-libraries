@@ -16,6 +16,7 @@ import jenkins.ComponentBuildStatus
 import jenkins.ComponentIntegTestStatus
 import jenkins.CreateIntegTestMarkDownTable
 import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 
 void call(Map args = [:]) {
     def inputManifest = readYaml(file: args.inputManifestPath)
@@ -50,10 +51,10 @@ void call(Map args = [:]) {
             def testData = []
             def queryData = componentIntegTestStatus.getComponentIntegTestFailedData(component.name)
             def queryDataJson = JsonOutput.toJson(queryData)
-            println(queryDataJson)
             println("Query Data: ${queryData.getClass().getName()}")
-            println("Query Data: ${queryDataJson.getClass().getName()}")
-            def totalHits = queryDataJson.hits.hits.collect {it._source}
+            def queryDataMap = new JsonSlurper().parseText(queryDataJson)
+            println("queryDataMap Data: ${queryDataMap.getClass().getName()}")
+            def totalHits = queryDataMap.hits.hits.collect {it._source}
             println("totalHits Data: ${totalHits.getClass().getName()}")
             totalHits.each { hit ->
              def rowData = [
