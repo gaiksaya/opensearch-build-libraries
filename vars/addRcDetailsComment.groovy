@@ -77,7 +77,7 @@ void call(Map args = [:]) {
     withCredentials([usernamePassword(credentialsId: 'jenkins-github-bot-token', passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USER')]) {
         println('Adding RC details to the release issue as a comment.')
         sh(
-                script: "gh issue comment ${releaseIssueUrl} --body-file 'rc-details-comment-body.md'",
+                script: "gh issue comment https://github.com/gaiksaya/opensearch-build/issues/49 --body-file 'rc-details-comment-body.md'",
                 returnStdout: true
         )
     }
