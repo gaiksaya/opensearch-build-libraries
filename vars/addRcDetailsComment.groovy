@@ -22,7 +22,7 @@ void call(Map args = [:]) {
     def opensearchDashboardsRcNumber
     def opensearchRcBuildNumber
     def opensearchDashboardsRcBuildNumber
-    String releaseIssueUrl
+    String releaseIssueUrl = ''
 
     if (version.isEmpty()){
         error('version is required to get RC details.')
