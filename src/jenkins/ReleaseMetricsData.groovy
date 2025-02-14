@@ -31,6 +31,7 @@ class ReleaseMetricsData {
         this.version = version
         this.script = script
         this.openSearchMetricsQuery = new OpenSearchMetricsQuery(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, INDEX_NAME, script)
+        
     }
 
     ReleaseMetricsData(String metricsUrl, String awsAccessKey, String awsSecretKey, String awsSessionToken, String version, String indexName, def script) {
