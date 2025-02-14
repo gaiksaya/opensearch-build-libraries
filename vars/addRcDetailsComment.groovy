@@ -6,8 +6,10 @@
  * this file be licensed under the Apache-2.0 license or a
  * compatible open source license.
  */
-import jenkins.ReleaseCandidateStatus
+
 import jenkins.ReleaseMetricsData
+import jenkins.ReleaseCandidateStatus
+import utils.OpenSearchMetricsQuery
 
 /** Library to add Release Candidate Details to the release issue
  *  @param Map args = [:] args A map of the following parameters
@@ -16,6 +18,7 @@ import jenkins.ReleaseMetricsData
  *  @param args.opensearchDashboardsRcNumber <optional> - OpenSearch-Dashboards RC number. eg: 5. Defaults to latest RC number
  * */
 void call(Map args = [:]) {
+
     def buildIndexName = 'opensearch-distribution-build-results'
     def version = args.version
     def opensearchRcNumber
@@ -35,9 +38,10 @@ void call(Map args = [:]) {
             def awsAccessKey = env.AWS_ACCESS_KEY_ID
             def awsSecretKey = env.AWS_SECRET_ACCESS_KEY
             def awsSessionToken = env.AWS_SESSION_TOKEN
+            OpenSearchMetricsQuery openSearchMetricsQuery = new OpenSearchMetricsQuery(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, this)
 
-            ReleaseCandidateStatus releaseCandidateStatus = new ReleaseCandidateStatus(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, buildIndexName, version, this)
-            ReleaseMetricsData releaseMetricsData = new ReleaseMetricsData(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, version, this)
+            ReleaseCandidateStatus releaseCandidateStatus = new ReleaseCandidateStatus(openSearchMetricsQuery, version, buildIndexName)
+            ReleaseMetricsData releaseMetricsData = new ReleaseMetricsData(openSearchMetricsQuery, version)
 
             releaseIssueUrl = releaseMetricsData.getReleaseIssue('opensearch-build')
             opensearchRcNumber = args.opensearchRcNumber ?: releaseCandidateStatus.getLatestRcNumber('OpenSearch')
@@ -111,21 +115,21 @@ def getDockerScanResult(String component, def distributionRcBuildNumber) {
     } else {
         error("Invalid component name: ${component}. Valid values: OpenSearch, OpenSearch-Dashboards")
     }
-    String dockerScanUrl = sh (
+    def dockerScanUrl = sh (
             script: "curl -s -XGET \"${JENKINS_BASE_URL}/${BLUE_OCEAN_URL}/${buildJobName}/runs/${distributionRcBuildNumber}/nodes/\" | jq '.[] | select(.actions[].description? | contains(\"docker-scan\")) | .actions[] | select(.description | contains(\"docker-scan\")) | ._links.self.href'",
             returnStdout: true
     ).trim()
-    String artifactsUrl = sh(
+    def artifactsUrl = sh(
             script: "curl -s -XGET \"${JENKINS_BASE_URL}${dockerScanUrl}\" | jq -r '._links.artifacts.href'",
             returnStdout: true
     ).trim()
-    String dockerTxtScanUrl = sh(
+    def dockerTxtScanUrl = sh(
             script: "curl -s -XGET \"${JENKINS_BASE_URL}${artifactsUrl}\" | jq -r '.[] | select(.name | endswith(\".txt\")) | .url'",
             returnStdout: true
     ).trim()
-    String fullDockerTxtScanUrl = "${JENKINS_BASE_URL}${dockerTxtScanUrl}"
+    def fullDockerTxtScanUrl = "${JENKINS_BASE_URL}${dockerTxtScanUrl}"
     // Do not trim as it messes the text table.
-    String dockerScanResult = sh(
+    def dockerScanResult = sh(
             script: "curl -s -XGET \"${fullDockerTxtScanUrl}\"",
             returnStdout: true
     )

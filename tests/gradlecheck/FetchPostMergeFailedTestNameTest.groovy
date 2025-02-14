@@ -12,14 +12,13 @@ package gradlecheck
 import org.junit.*
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import utils.OpenSearchMetricsQuery
+import gradlecheck.FetchPostMergeFailedTestName
 
 class FetchPostMergeFailedTestNameTest {
 
     private FetchPostMergeFailedTestName fetchPostMergeFailedTestName
-    private final String metricsUrl = "http://example.com"
-    private final String awsAccessKey = "testAccessKey"
-    private final String awsSecretKey = "testSecretKey"
-    private final String awsSessionToken = "testSessionToken"
+    private OpenSearchMetricsQuery openSearchMetricsQuery
     private final String indexName = "gradle-check-*"
     private def script
 
@@ -55,7 +54,8 @@ class FetchPostMergeFailedTestNameTest {
             }
             return ""
         }
-        fetchPostMergeFailedTestName = new FetchPostMergeFailedTestName(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, indexName, script)
+        openSearchMetricsQuery = new OpenSearchMetricsQuery("http://example.com", "testAccessKey", "testSecretKey", "testSessionToken", script)
+        fetchPostMergeFailedTestName = new FetchPostMergeFailedTestName(openSearchMetricsQuery, indexName)
     }
 
     @Test

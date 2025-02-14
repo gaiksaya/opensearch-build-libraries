@@ -11,11 +11,13 @@ package jenkins
 
 import org.junit.*
 import groovy.json.JsonOutput
-import jenkins.ReleaseMetricsData
 import groovy.json.JsonSlurper
+import utils.OpenSearchMetricsQuery
+import jenkins.ReleaseMetricsData
 
 class TestReleaseMetricsData {
     private ReleaseMetricsData releaseMetricsData
+    private OpenSearchMetricsQuery openSearchMetricsQuery
     private final String metricsUrl = 'http://example.com'
     private final String awsAccessKey = 'testAccessKey'
     private final String awsSecretKey = 'testSecretKey'
@@ -66,7 +68,8 @@ class TestReleaseMetricsData {
             }
             return ""
         }
-        releaseMetricsData = new ReleaseMetricsData(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, version, script)
+        this.openSearchMetricsQuery = new OpenSearchMetricsQuery(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, script)
+        this.releaseMetricsData = new ReleaseMetricsData(this.openSearchMetricsQuery, version, 'opensearch_release_metrics')
     }
 
     @Test
@@ -183,9 +186,10 @@ class TestReleaseMetricsData {
                 return responseText
             }
         }
-        releaseMetricsData = new ReleaseMetricsData(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, version, script)
+        OpenSearchMetricsQuery openSearchMetricsQuery = new OpenSearchMetricsQuery(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, script)
+        ReleaseMetricsData releaseMetricsDataObj = new ReleaseMetricsData(openSearchMetricsQuery, version, 'opensearch_release_metrics')
         def expectedOutput = "https://github.com/opensearch-project/opensearch-build/issues/5152"
-        def result = releaseMetricsData.getReleaseIssue('opensearch-build')
+        def result = releaseMetricsDataObj.getReleaseIssue('opensearch-build')
         assert result == expectedOutput
     }
 }

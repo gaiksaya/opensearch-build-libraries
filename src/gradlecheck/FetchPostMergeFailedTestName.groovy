@@ -13,20 +13,12 @@ import groovy.json.JsonOutput
 import utils.OpenSearchMetricsQuery
 
 class FetchPostMergeFailedTestName  {
-    String metricsUrl
-    String awsAccessKey
-    String awsSecretKey
-    String awsSessionToken
+    OpenSearchMetricsQuery openSearchMetricsQueryObject
     String indexName
-    def script
 
-    FetchPostMergeFailedTestName(String metricsUrl, String awsAccessKey, String awsSecretKey, String awsSessionToken, String indexName, def script) {
-        this.metricsUrl = metricsUrl
-        this.awsAccessKey = awsAccessKey
-        this.awsSecretKey = awsSecretKey
-        this.awsSessionToken = awsSessionToken
+    FetchPostMergeFailedTestName(OpenSearchMetricsQuery openSearchMetricsQueryObject, String indexName) {
+        this.openSearchMetricsQueryObject = openSearchMetricsQueryObject
         this.indexName = indexName
-        this.script = script
     }
 
     def getQuery(testName, gitReference) {
@@ -127,6 +119,6 @@ class FetchPostMergeFailedTestName  {
 
     }
     def getPostMergeFailedTestName(testName, gitReference) {
-        return new OpenSearchMetricsQuery(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, indexName, script).fetchMetrics(getQuery(testName, gitReference))
+        return this.openSearchMetricsQueryObject.fetchMetrics(indexName, getQuery(testName, gitReference))
     }
 }

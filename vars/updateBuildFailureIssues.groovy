@@ -15,6 +15,7 @@
  */
 
 import jenkins.ComponentBuildStatus
+import utils.OpenSearchMetricsQuery
 
 void call(Map args = [:]) {
     def inputManifest = readYaml(file: args.inputManifestPath)
@@ -35,8 +36,9 @@ void call(Map args = [:]) {
                     def awsSessionToken = env.AWS_SESSION_TOKEN
                     def indexName = 'opensearch-distribution-build-results'
 
-                    ComponentBuildStatus componentBuildStatus = new ComponentBuildStatus(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, indexName, product, currentVersion, args.distributionBuildNumber, buildStartTimeFrom, buildStartTimeTo, this)
-            
+                    OpenSearchMetricsQuery openSearchMetricsQuery = new OpenSearchMetricsQuery(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, this)
+                    ComponentBuildStatus componentBuildStatus = new ComponentBuildStatus(openSearchMetricsQuery, indexName, product, currentVersion, args.distributionBuildNumber, buildStartTimeFrom, buildStartTimeTo)
+
                     passedComponents = componentBuildStatus.getComponents('passed')
                     failedComponents = componentBuildStatus.getComponents('failed')
                     println('Failed Components: '+ failedComponents)

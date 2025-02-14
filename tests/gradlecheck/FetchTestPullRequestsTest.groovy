@@ -12,14 +12,13 @@ package gradlecheck
 import org.junit.*
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import utils.OpenSearchMetricsQuery
+import gradlecheck.FetchTestPullRequests
 
 class FetchTestPullRequestsTest {
 
     private FetchTestPullRequests fetchTestPullRequests
-    private final String metricsUrl = "http://example.com"
-    private final String awsAccessKey = "testAccessKey"
-    private final String awsSecretKey = "testSecretKey"
-    private final String awsSessionToken = "testSessionToken"
+    private OpenSearchMetricsQuery openSearchMetricsQuery
     private final String indexName = "gradle-check-*"
     private def script
 
@@ -43,7 +42,8 @@ class FetchTestPullRequestsTest {
             }
             return ""
         }
-        fetchTestPullRequests = new FetchTestPullRequests(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, indexName, script)
+        openSearchMetricsQuery = new OpenSearchMetricsQuery("http://example.com", "testAccessKey", "testSecretKey", "testSessionToken", script)
+        fetchTestPullRequests = new FetchTestPullRequests(openSearchMetricsQuery, indexName)
     }
 
     @Test

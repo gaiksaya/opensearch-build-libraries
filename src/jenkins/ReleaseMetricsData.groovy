@@ -13,35 +13,14 @@ import groovy.json.JsonOutput
 import utils.OpenSearchMetricsQuery
 
 class ReleaseMetricsData {
-    public static final String INDEX_NAME = 'opensearch_release_metrics'
-    String metricsUrl
-    String awsAccessKey
-    String awsSecretKey
-    String awsSessionToken
     String version
     String indexName
-    def script
-    OpenSearchMetricsQuery openSearchMetricsQuery
+    OpenSearchMetricsQuery openSearchMetricsQueryObject
 
-    ReleaseMetricsData(String metricsUrl, String awsAccessKey, String awsSecretKey, String awsSessionToken, String version, def script) {
-        this.metricsUrl = metricsUrl
-        this.awsAccessKey = awsAccessKey
-        this.awsSecretKey = awsSecretKey
-        this.awsSessionToken = awsSessionToken
-        this.version = version
-        this.script = script
-        this.openSearchMetricsQuery = new OpenSearchMetricsQuery(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, INDEX_NAME, script)
-    }
-
-    ReleaseMetricsData(String metricsUrl, String awsAccessKey, String awsSecretKey, String awsSessionToken, String version, String indexName, def script) {
-        this.metricsUrl = metricsUrl
-        this.awsAccessKey = awsAccessKey
-        this.awsSecretKey = awsSecretKey
-        this.awsSessionToken = awsSessionToken
+    ReleaseMetricsData(OpenSearchMetricsQuery openSearchMetricsQueryObject, String version, String indexName = 'opensearch_release_metrics') {
+        this.openSearchMetricsQueryObject = openSearchMetricsQueryObject
         this.version = version
         this.indexName = indexName
-        this.script = script
-        this.openSearchMetricsQuery = new OpenSearchMetricsQuery(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, indexName, script)
     }
 
     String getReleaseOwnerQuery(String component) {
@@ -109,14 +88,14 @@ class ReleaseMetricsData {
     }
 
     ArrayList getReleaseOwners(String component) {
-        def jsonResponse = this.openSearchMetricsQuery.fetchMetrics(getReleaseOwnerQuery(component))
+        def jsonResponse = this.openSearchMetricsQueryObject.fetchMetrics(indexName, getReleaseOwnerQuery(component))
         def releaseOwners = jsonResponse.hits.hits._source.release_owners.flatten()
         return releaseOwners
     }
 
     String getReleaseIssue(String repository) {
-        def jsonResponse = this.openSearchMetricsQuery.fetchMetrics(getReleaseIssueQuery(repository))
+        def jsonResponse = this.openSearchMetricsQueryObject.fetchMetrics(indexName, getReleaseIssueQuery(repository))
         def releaseIssue = jsonResponse.hits.hits._source.release_issue[0]
-        return releaseIssue.toString()
+        return releaseIssue
     }
 }

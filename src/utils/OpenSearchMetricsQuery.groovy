@@ -16,19 +16,17 @@ class OpenSearchMetricsQuery {
     String awsAccessKey
     String awsSecretKey
     String awsSessionToken
-    String indexName
     def script
 
-    OpenSearchMetricsQuery(String metricsUrl, String awsAccessKey, String awsSecretKey, String awsSessionToken, String indexName, def script) {
+    OpenSearchMetricsQuery(String metricsUrl, String awsAccessKey, String awsSecretKey, String awsSessionToken, def script) {
         this.metricsUrl = metricsUrl
         this.awsAccessKey = awsAccessKey
         this.awsSecretKey = awsSecretKey
         this.awsSessionToken = awsSessionToken
-        this.indexName = indexName
         this.script = script
     }
 
-    def fetchMetrics(String query) {
+    def fetchMetrics(String indexName, String query) {
         this.script.println('Running query: '+ query)
         def response = script.sh(
             script: """

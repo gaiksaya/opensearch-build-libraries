@@ -12,10 +12,13 @@ package jenkins
 import org.junit.*
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import utils.OpenSearchMetricsQuery
+import jenkins.ComponentIntegTestStatus
 
 class TestComponentIntegTestStatus {
 
     private ComponentIntegTestStatus componentIntegTestStatus
+    private OpenSearchMetricsQuery openSearchMetricsQuery
     private final String metricsUrl = 'http://example.com'
     private final String awsAccessKey = 'testAccessKey'
     private final String awsSecretKey = 'testSecretKey'
@@ -95,7 +98,8 @@ class TestComponentIntegTestStatus {
             }
             return ""
         }
-        componentIntegTestStatus = new ComponentIntegTestStatus(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, indexName, product, version, distributionBuildNumber, script)
+        openSearchMetricsQuery = new OpenSearchMetricsQuery(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, script)
+        componentIntegTestStatus = new ComponentIntegTestStatus(openSearchMetricsQuery, indexName, product, version, distributionBuildNumber)
     }
 
     @Test
@@ -104,7 +108,7 @@ class TestComponentIntegTestStatus {
                 size: 50,
                 _source: [
                         "component",
-                        ], 
+                        ],
                 query: [
                         bool: [
                                 filter: [
@@ -235,7 +239,8 @@ class TestComponentIntegTestStatus {
             }
             return ""
         }
-        componentIntegTestStatus = new ComponentIntegTestStatus(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, indexName, product, version, distributionBuildNumber, script)
+        OpenSearchMetricsQuery openSearchMetricsQueryObj = new OpenSearchMetricsQuery(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, script)
+        componentIntegTestStatus = new ComponentIntegTestStatus(openSearchMetricsQueryObj, indexName, product, version, distributionBuildNumber)
         def componentData = '''
                     {
                     "took": 5,

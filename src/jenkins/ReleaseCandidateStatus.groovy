@@ -13,24 +13,14 @@ import groovy.json.JsonOutput
 import utils.OpenSearchMetricsQuery
 
 class ReleaseCandidateStatus {
-    String metricsUrl
-    String awsAccessKey
-    String awsSecretKey
-    String awsSessionToken
+    OpenSearchMetricsQuery openSearchMetricsQueryObject
     String indexName
     String version
-    def script
-    OpenSearchMetricsQuery openSearchMetricsQuery
 
-    ReleaseCandidateStatus(String metricsUrl, String awsAccessKey, String awsSecretKey, String awsSessionToken, String indexName, String version, def script) {
-        this.metricsUrl = metricsUrl
-        this.awsAccessKey = awsAccessKey
-        this.awsSecretKey = awsSecretKey
-        this.awsSessionToken = awsSessionToken
+    ReleaseCandidateStatus(OpenSearchMetricsQuery openSearchMetricsQueryObject, String version, String indexName) {
+        this.openSearchMetricsQueryObject = openSearchMetricsQueryObject
         this.indexName = indexName
         this.version = version
-        this.script = script
-        this.openSearchMetricsQuery = new OpenSearchMetricsQuery(metricsUrl,awsAccessKey, awsSecretKey, awsSessionToken, indexName, script)
     }
 
     def getRcDistributionNumberQuery(Integer rcNumber = null, String componentName) {
@@ -155,13 +145,13 @@ class ReleaseCandidateStatus {
     }
 
     def getRcDistributionNumber(Integer rcNumber = null, String componentName) {
-         def jsonResponse = this.openSearchMetricsQuery.fetchMetrics(getRcDistributionNumberQuery(rcNumber, componentName))
+         def jsonResponse = this.openSearchMetricsQueryObject.fetchMetrics(indexName, getRcDistributionNumberQuery(rcNumber, componentName))
          def rcDistributionNumber = jsonResponse.hits.hits[0]._source.distribution_build_number
          return rcDistributionNumber
     }
 
     def getLatestRcNumber(String componentName) {
-        def jsonResponse = this.openSearchMetricsQuery.fetchMetrics(getLatestRcNumberQuery(componentName))
+        def jsonResponse = this.openSearchMetricsQueryObject.fetchMetrics(indexName, getLatestRcNumberQuery(componentName))
         def rcNumber = jsonResponse.hits.hits[0]._source.rc_number
         return rcNumber
     }

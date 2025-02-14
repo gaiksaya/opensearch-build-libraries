@@ -13,28 +13,18 @@ import groovy.json.JsonOutput
 import utils.OpenSearchMetricsQuery
 
 class ComponentIntegTestStatus {
-    String metricsUrl
-    String awsAccessKey
-    String awsSecretKey
-    String awsSessionToken
+    OpenSearchMetricsQuery openSearchMetricsQueryObject
     String indexName
     String product
     String version
     String distributionBuildNumber
-    def script
-    OpenSearchMetricsQuery openSearchMetricsQuery
 
-    ComponentIntegTestStatus(String metricsUrl, String awsAccessKey, String awsSecretKey, String awsSessionToken, String indexName, String product, String version, String distributionBuildNumber, def script) {
-        this.metricsUrl = metricsUrl
-        this.awsAccessKey = awsAccessKey
-        this.awsSecretKey = awsSecretKey
-        this.awsSessionToken = awsSessionToken
+    ComponentIntegTestStatus(OpenSearchMetricsQuery openSearchMetricsQueryObject, String indexName, String product, String version, String distributionBuildNumber) {
+        this.openSearchMetricsQueryObject = openSearchMetricsQueryObject
         this.indexName = indexName
         this.product = product
         this.version = version
         this.distributionBuildNumber = distributionBuildNumber
-        this.script = script
-        this.openSearchMetricsQuery = new OpenSearchMetricsQuery(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, indexName, script)
     }
 
     def getQuery(String componentIntegTestResult) {
@@ -111,13 +101,13 @@ class ComponentIntegTestStatus {
     }
 
     def getComponents(String componentBuildResult) {
-        def jsonResponse = this.openSearchMetricsQuery.fetchMetrics(getQuery(componentBuildResult))
+        def jsonResponse = this.openSearchMetricsQueryObject.fetchMetrics(indexName, getQuery(componentBuildResult))
         def components = jsonResponse.hits.hits.collect { it._source.component }
         return components
     }
 
     def getComponentIntegTestFailedData(String component) {
-        def jsonResponse = this.openSearchMetricsQuery.fetchMetrics(componentIntegTestFailedDataQuery(component))
+        def jsonResponse = this.openSearchMetricsQueryObject.fetchMetrics(indexName, componentIntegTestFailedDataQuery(component))
         return jsonResponse
     }
 

@@ -11,12 +11,14 @@ package jenkins
 
 import org.junit.*
 import groovy.json.JsonOutput
+import utils.OpenSearchMetricsQuery
 import jenkins.ReleaseCandidateStatus
 import groovy.json.JsonSlurper
 
 
 class TestReleaseCandidateStatus {
     private ReleaseCandidateStatus releaseCandidateStatus
+    private OpenSearchMetricsQuery openSearchMetricsQuery
     private final String metricsUrl = 'http://example.com'
     private final String awsAccessKey = 'testAccessKey'
     private final String awsSecretKey = 'testSecretKey'
@@ -28,7 +30,8 @@ class TestReleaseCandidateStatus {
 
     @Before
     void setUp() {
-        releaseCandidateStatus = new ReleaseCandidateStatus(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, buildIndexName, version, script)
+        openSearchMetricsQuery = new OpenSearchMetricsQuery(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, script)
+        releaseCandidateStatus = new ReleaseCandidateStatus(openSearchMetricsQuery, version, buildIndexName)
     }
 
     @Test
@@ -194,7 +197,8 @@ class TestReleaseCandidateStatus {
                 return responseText
             }
         }
-        ReleaseCandidateStatus releaseCandidateStatusOb = new ReleaseCandidateStatus(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, buildIndexName, version, script)
+        OpenSearchMetricsQuery openSearchMetricsQuery =  new OpenSearchMetricsQuery(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, script)
+        ReleaseCandidateStatus releaseCandidateStatusOb = new ReleaseCandidateStatus(openSearchMetricsQuery, version, buildIndexName)
         def expectedOutput = 10787
         def result = releaseCandidateStatusOb.getRcDistributionNumber('OpenSearch')
         assert result == expectedOutput
@@ -241,7 +245,8 @@ class TestReleaseCandidateStatus {
                 return responseText
             }
         }
-        ReleaseCandidateStatus releaseCandidateStatusOb = new ReleaseCandidateStatus(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, buildIndexName, version, script)
+        OpenSearchMetricsQuery openSearchMetricsQuery =  new OpenSearchMetricsQuery(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, script)
+        ReleaseCandidateStatus releaseCandidateStatusOb = new ReleaseCandidateStatus(openSearchMetricsQuery, version, buildIndexName)
         def expectedOutput = 5
         def result = releaseCandidateStatusOb.getLatestRcNumber('OpenSearch')
         assert result == expectedOutput

@@ -16,6 +16,7 @@ import jenkins.ComponentBuildStatus
 import jenkins.ComponentIntegTestStatus
 import jenkins.CreateIntegTestMarkDownTable
 import jenkins.ReleaseMetricsData
+import utils.OpenSearchMetricsQuery
 
 void call(Map args = [:]) {
     def inputManifest = readYaml(file: args.inputManifestPath)
@@ -36,9 +37,11 @@ void call(Map args = [:]) {
             def awsAccessKey = env.AWS_ACCESS_KEY_ID
             def awsSecretKey = env.AWS_SECRET_ACCESS_KEY
             def awsSessionToken = env.AWS_SESSION_TOKEN
-            def distributionBuildNumber = args.distributionBuildNumber ?: new ComponentBuildStatus(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, buildIndexName, product, version, this).getLatestDistributionBuildNumber().toString()
-            ComponentIntegTestStatus componentIntegTestStatus = new ComponentIntegTestStatus(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, integTestIndexName, product, version, distributionBuildNumber, this)
-            ReleaseMetricsData releaseMetricsData = new ReleaseMetricsData(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, version, releaseIndexName, this)
+            OpenSearchMetricsQuery openSearchMetricsQuery = new OpenSearchMetricsQuery(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, this)
+
+            def distributionBuildNumber = args.distributionBuildNumber ?: new ComponentBuildStatus(openSearchMetricsQuery, buildIndexName, product, version).getLatestDistributionBuildNumber().toString()
+            ComponentIntegTestStatus componentIntegTestStatus = new ComponentIntegTestStatus(openSearchMetricsQuery, integTestIndexName, product, version, distributionBuildNumber)
+            ReleaseMetricsData releaseMetricsData = new ReleaseMetricsData(openSearchMetricsQuery, version, releaseIndexName)
             println('Distribution Build Number: ' + distributionBuildNumber)
             passedComponents = componentIntegTestStatus.getComponents('passed')
             failedComponents = componentIntegTestStatus.getComponents('failed')

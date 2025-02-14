@@ -13,20 +13,12 @@ import groovy.json.JsonOutput
 import utils.OpenSearchMetricsQuery
 
 class FetchPostMergeFailedTestClass {
-    String metricsUrl
-    String awsAccessKey
-    String awsSecretKey
-    String awsSessionToken
+    OpenSearchMetricsQuery openSearchMetricsQueryObject
     String indexName
-    def script
 
-    FetchPostMergeFailedTestClass(String metricsUrl, String awsAccessKey, String awsSecretKey, String awsSessionToken, String indexName, def script) {
-        this.metricsUrl = metricsUrl
-        this.awsAccessKey = awsAccessKey
-        this.awsSecretKey = awsSecretKey
-        this.awsSessionToken = awsSessionToken
+    FetchPostMergeFailedTestClass(OpenSearchMetricsQuery openSearchMetricsQueryObject, String indexName) {
+        this.openSearchMetricsQueryObject = openSearchMetricsQueryObject
         this.indexName = indexName
-        this.script = script
     }
 
     def getQuery(timeFrame) {
@@ -97,7 +89,7 @@ class FetchPostMergeFailedTestClass {
     }
 
     def getPostMergeFailedTestClass(timeFrame) {
-         def jsonResponse = new OpenSearchMetricsQuery(metricsUrl,awsAccessKey, awsSecretKey, awsSessionToken, indexName, script).fetchMetrics(getQuery(timeFrame))
+         def jsonResponse = this.openSearchMetricsQueryObject.fetchMetrics(indexName, getQuery(timeFrame))
          def keys = jsonResponse.aggregations.test_class_keyword_agg.buckets.collect { it.key }
          return keys
     }

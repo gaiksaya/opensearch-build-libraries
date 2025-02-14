@@ -13,51 +13,36 @@ import groovy.json.JsonOutput
 import utils.OpenSearchMetricsQuery
 
 class ComponentBuildStatus {
-    String metricsUrl
-    String awsAccessKey
-    String awsSecretKey
-    String awsSessionToken
+    OpenSearchMetricsQuery openSearchMetricsQueryObject
     String indexName
-    String product 
+    String product
     String version
     String distributionBuildNumber
     String buildStartTimeFrom
     String buildStartTimeTo
-    def script
-    OpenSearchMetricsQuery openSearchMetricsQuery
 
-    ComponentBuildStatus(String metricsUrl, String awsAccessKey, String awsSecretKey, String awsSessionToken, String indexName, String product, String version, String distributionBuildNumber, String buildStartTimeFrom, String buildStartTimeTo, def script) {
-        this.metricsUrl = metricsUrl
-        this.awsAccessKey = awsAccessKey
-        this.awsSecretKey = awsSecretKey
-        this.awsSessionToken = awsSessionToken
+    ComponentBuildStatus(OpenSearchMetricsQuery openSearchMetricsQueryObject, String indexName, String product, String version, String distributionBuildNumber, String buildStartTimeFrom, String buildStartTimeTo) {
         this.indexName = indexName
         this.product = product
         this.version = version
         this.distributionBuildNumber = distributionBuildNumber
         this.buildStartTimeFrom = buildStartTimeFrom
         this.buildStartTimeTo = buildStartTimeTo
-        this.script = script
-        this.openSearchMetricsQuery = new OpenSearchMetricsQuery(metricsUrl,awsAccessKey, awsSecretKey, awsSessionToken, indexName, script)
+        this.openSearchMetricsQueryObject = openSearchMetricsQueryObject
     }
 
-     ComponentBuildStatus(String metricsUrl, String awsAccessKey, String awsSecretKey, String awsSessionToken, String indexName, String product, String version, def script) {
-        this.metricsUrl = metricsUrl
-        this.awsAccessKey = awsAccessKey
-        this.awsSecretKey = awsSecretKey
-        this.awsSessionToken = awsSessionToken
+     ComponentBuildStatus(OpenSearchMetricsQuery openSearchMetricsQueryObject, String indexName, String product, String version) {
         this.indexName = indexName
         this.product = product
         this.version = version
-        this.script = script
-        this.openSearchMetricsQuery = new OpenSearchMetricsQuery(metricsUrl,awsAccessKey, awsSecretKey, awsSessionToken, indexName, script)
+        this.openSearchMetricsQueryObject = openSearchMetricsQueryObject
     }
 
     def getQuery(String componentBuildResult) {
         def queryMap = [
                 _source: [
                         "component",
-                        ], 
+                        ],
                 query: [
                         bool: [
                                 filter: [
@@ -102,7 +87,7 @@ class ComponentBuildStatus {
                 size : 1,
                 _source: [
                         "distribution_build_number",
-                        ], 
+                        ],
                 query: [
                         bool: [
                                 filter: [
@@ -132,13 +117,13 @@ class ComponentBuildStatus {
     }
 
     def getComponents(String componentBuildResult) {
-         def jsonResponse = this.openSearchMetricsQuery.fetchMetrics(getQuery(componentBuildResult))
+         def jsonResponse = this.openSearchMetricsQueryObject.fetchMetrics(indexName, getQuery(componentBuildResult))
          def components = jsonResponse.hits.hits.collect { it._source.component }
          return components
     }
 
     def getLatestDistributionBuildNumber() {
-         def jsonResponse = this.openSearchMetricsQuery.fetchMetrics(getLatestDistributionBuildNumberQuery())
+         def jsonResponse = this.openSearchMetricsQueryObject.fetchMetrics(indexName, getLatestDistributionBuildNumberQuery())
          def latestDistributionBuildNumber = jsonResponse.hits.hits[0]._source.distribution_build_number
          return latestDistributionBuildNumber
     }

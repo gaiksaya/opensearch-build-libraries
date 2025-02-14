@@ -12,10 +12,13 @@ package jenkins
 import org.junit.*
 import groovy.json.JsonOutput
 import groovy.mock.interceptor.MockFor
+import utils.OpenSearchMetricsQuery
+import jenkins.ComponentBuildStatus
 
 class TestComponentBuildStatus {
 
     private ComponentBuildStatus componentBuildStatus
+    private OpenSearchMetricsQuery openSearchMetricsQuery
     private final String metricsUrl = 'http://example.com'
     private final String awsAccessKey = 'testAccessKey'
     private final String awsSecretKey = 'testSecretKey'
@@ -65,7 +68,8 @@ class TestComponentBuildStatus {
             }
             return ""
         }
-        componentBuildStatus = new ComponentBuildStatus(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, indexName, product, version, distributionBuildNumber, buildStartTimeFrom, buildStartTimeTo, script)
+        openSearchMetricsQuery = new OpenSearchMetricsQuery(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, script)
+        componentBuildStatus = new ComponentBuildStatus(openSearchMetricsQuery, indexName, product, version, distributionBuildNumber, buildStartTimeFrom, buildStartTimeTo)
     }
 
     @Test
@@ -73,7 +77,7 @@ class TestComponentBuildStatus {
         def expectedOutput = JsonOutput.toJson([
                 _source: [
                         "component",
-                        ], 
+                        ],
                 query: [
                         bool: [
                                 filter: [

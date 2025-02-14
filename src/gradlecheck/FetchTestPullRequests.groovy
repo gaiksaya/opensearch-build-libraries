@@ -13,20 +13,12 @@ import groovy.json.JsonOutput
 import utils.OpenSearchMetricsQuery
 
 class FetchTestPullRequests  {
-    String metricsUrl
-    String awsAccessKey
-    String awsSecretKey
-    String awsSessionToken
+    OpenSearchMetricsQuery openSearchMetricsQueryObject
     String indexName
-    def script
 
-    FetchTestPullRequests(String metricsUrl, String awsAccessKey, String awsSecretKey, String awsSessionToken, String indexName, def script) {
-        this.metricsUrl = metricsUrl
-        this.awsAccessKey = awsAccessKey
-        this.awsSecretKey = awsSecretKey
-        this.awsSessionToken = awsSessionToken
+    FetchTestPullRequests(OpenSearchMetricsQuery openSearchMetricsQueryObject,  String indexName) {
+        this.openSearchMetricsQueryObject = openSearchMetricsQueryObject
         this.indexName = indexName
-        this.script = script
     }
 
     def getQuery(testName) {
@@ -99,7 +91,7 @@ class FetchTestPullRequests  {
         return query.replace('"', '\\"')
     }
     List<String> getTestPullRequests(testName) {
-        def jsonResponse = new OpenSearchMetricsQuery(metricsUrl,awsAccessKey, awsSecretKey, awsSessionToken, indexName, script).fetchMetrics(getQuery(testName))
+        def jsonResponse = this.openSearchMetricsQueryObject.fetchMetrics(indexName, getQuery(testName))
         def keys = jsonResponse.aggregations.pull_request_keyword_agg.buckets.collect { it.key }
         return keys
     }
