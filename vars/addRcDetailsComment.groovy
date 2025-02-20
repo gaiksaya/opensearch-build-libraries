@@ -8,6 +8,7 @@
  */
 import jenkins.ReleaseCandidateStatus
 import jenkins.ReleaseMetricsData
+import utils.OpenSearchMetricsQuery
 
 /** Library to add Release Candidate Details to the release issue
  *  @param Map args = [:] args A map of the following parameters
@@ -35,9 +36,9 @@ void call(Map args = [:]) {
             def awsAccessKey = env.AWS_ACCESS_KEY_ID
             def awsSecretKey = env.AWS_SECRET_ACCESS_KEY
             def awsSessionToken = env.AWS_SESSION_TOKEN
-
-            ReleaseCandidateStatus releaseCandidateStatus = new ReleaseCandidateStatus(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, buildIndexName, version, this)
-            ReleaseMetricsData releaseMetricsData = new ReleaseMetricsData(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, version, this)
+            OpenSearchMetricsQuery openSearchMetricsQuery = new OpenSearchMetricsQuery(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, this)
+            ReleaseCandidateStatus releaseCandidateStatus = new ReleaseCandidateStatus(openSearchMetricsQuery, buildIndexName, version)
+            ReleaseMetricsData releaseMetricsData = new ReleaseMetricsData(openSearchMetricsQuery, version)
 
             releaseIssueUrl = releaseMetricsData.getReleaseIssue('opensearch-build')
             opensearchRcNumber = args.opensearchRcNumber ?: releaseCandidateStatus.getLatestRcNumber('OpenSearch')

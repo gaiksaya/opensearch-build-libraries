@@ -14,34 +14,19 @@ import utils.OpenSearchMetricsQuery
 
 class ReleaseMetricsData {
     public static final String INDEX_NAME = 'opensearch_release_metrics'
-    String metricsUrl
-    String awsAccessKey
-    String awsSecretKey
-    String awsSessionToken
     String version
     String indexName
-    def script
     def openSearchMetricsQuery
 
-    ReleaseMetricsData(String metricsUrl, String awsAccessKey, String awsSecretKey, String awsSessionToken, String version, def script) {
-        this.metricsUrl = metricsUrl
-        this.awsAccessKey = awsAccessKey
-        this.awsSecretKey = awsSecretKey
-        this.awsSessionToken = awsSessionToken
+    ReleaseMetricsData(OpenSearchMetricsQuery openSearchMetricsQuery, String version) {
         this.version = version
-        this.script = script
-        this.openSearchMetricsQuery = new OpenSearchMetricsQuery(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, INDEX_NAME, script)
+        this.openSearchMetricsQuery = openSearchMetricsQuery
     }
 
-    ReleaseMetricsData(String metricsUrl, String awsAccessKey, String awsSecretKey, String awsSessionToken, String version, String indexName, def script) {
-        this.metricsUrl = metricsUrl
-        this.awsAccessKey = awsAccessKey
-        this.awsSecretKey = awsSecretKey
-        this.awsSessionToken = awsSessionToken
+    ReleaseMetricsData(OpenSearchMetricsQuery openSearchMetricsQuery, String version, String indexName) {
         this.version = version
         this.indexName = indexName
-        this.script = script
-        this.openSearchMetricsQuery = new OpenSearchMetricsQuery(metricsUrl, awsAccessKey, awsSecretKey, awsSessionToken, indexName, script)
+        this.openSearchMetricsQuery = openSearchMetricsQuery
     }
 
     String getReleaseOwnerQuery(String component) {

@@ -13,24 +13,14 @@ import groovy.json.JsonOutput
 import utils.OpenSearchMetricsQuery
 
 class ReleaseCandidateStatus {
-    String metricsUrl
-    String awsAccessKey
-    String awsSecretKey
-    String awsSessionToken
     String indexName
     String version
-    def script
     def openSearchMetricsQuery
 
-    ReleaseCandidateStatus(String metricsUrl, String awsAccessKey, String awsSecretKey, String awsSessionToken, String indexName, String version, def script) {
-        this.metricsUrl = metricsUrl
-        this.awsAccessKey = awsAccessKey
-        this.awsSecretKey = awsSecretKey
-        this.awsSessionToken = awsSessionToken
+    ReleaseCandidateStatus(OpenSearchMetricsQuery openSearchMetricsQuery, String indexName, String version) {
         this.indexName = indexName
         this.version = version
-        this.script = script
-        this.openSearchMetricsQuery = new OpenSearchMetricsQuery(metricsUrl,awsAccessKey, awsSecretKey, awsSessionToken, indexName, script)
+        this.openSearchMetricsQuery = openSearchMetricsQuery
     }
 
     def getRcDistributionNumberQuery(Integer rcNumber = null, String componentName) {
