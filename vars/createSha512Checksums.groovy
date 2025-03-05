@@ -19,6 +19,7 @@ Closure call() {
                 if (file.endsWith(fileType)) {
                     echo("Creating sha for ${file}")
                     final sha512 = sh(script: "sha512sum ${file}", returnStdout: true).split()
+                    println("sha512 is: ${sha512}" )
                     //sha512 is an array [shasum, filename]
                     final basename = sh(script: "basename ${sha512[1]}", returnStdout: true)
                     // writing to file accroding to opensearch requirement - "512shaHash<space><space>basename"

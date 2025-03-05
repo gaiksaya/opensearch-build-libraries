@@ -8,8 +8,6 @@
                   createGithubIssue.withCredentials([[GITHUB_USER, GITHUB_TOKEN]], groovy.lang.Closure)
                      createGithubIssue.sh({script=gh issue list --repo https://github.com/opensearch-project/opensearch-build -S "Test GH issue title in:title" --json number --jq '.[0].number', returnStdout=true})
                      createGithubIssue.sh({script=date -d "3 days ago" +'%Y-%m-%d', returnStdout=true})
-                     createGithubIssue.sh({script=gh issue list --repo https://github.com/opensearch-project/opensearch-build -S "Test GH issue title in:title is:closed closed:>=bbb
-ccc" --json number --jq '.[0].number', returnStdout=true})
+                     createGithubIssue.sh({script=gh issue list --repo https://github.com/opensearch-project/opensearch-build -S "Test GH issue title in:title is:closed closed:>=" --json number --jq '.[0].number', returnStdout=true})
                      createGithubIssue.println(Issue already exists, editing the issue body)
-                     createGithubIssue.sh({script=gh issue edit bbb
-ccc --repo https://github.com/opensearch-project/opensearch-build --body-file issueBody.md, returnStdout=true})
+                     createGithubIssue.sh({script=gh issue edit 22 --repo https://github.com/opensearch-project/opensearch-build --body-file issueBody.md, returnStdout=true})

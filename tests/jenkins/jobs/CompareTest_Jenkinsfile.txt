@@ -37,3 +37,4 @@
                      runBenchmarkTestScript.readFile({file=/tmp/workspace/benchmark.ini})
                      runBenchmarkTestScript.writeFile({file=/tmp/workspace/benchmark.ini, text=})
                   runBenchmarkTestScript.sh(set +x && ./test.sh benchmark-test compare 12345 54321 --benchmark-config /tmp/workspace/benchmark.ini --suffix compare-tester)
+         CompareTest_Jenkinsfile.stage(compare-test, groovy.lang.Closure)

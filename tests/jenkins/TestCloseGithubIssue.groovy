@@ -23,7 +23,6 @@ class TestCloseGithubIssue extends BuildPipelineTest {
         super.setUp()
     }
 
-
     @Test
     void testCloseExistingGithubIssue() {
         this.registerLibTester(new CloseGithubIssueLibTester(
@@ -31,9 +30,23 @@ class TestCloseGithubIssue extends BuildPipelineTest {
             'Test GH issue title',
             'Test GH issue close comment'
             ))
+        helper.addShMock("""gh issue list --repo https://github.com/opensearch-project/opensearch-build -S "Test GH issue title in:title" --json number --jq '.[0].number'""") { script ->
+            return [stdout: "123", exitValue: 0]
+        }
         super.testPipeline("tests/jenkins/jobs/CloseGithubIssue_JenkinsFile")
+        assertThat(getCommands('sh', 'script'), hasItem("{script=gh issue close 123 -R opensearch-project/opensearch-build --comment \"Test GH issue close comment\", returnStdout=true}"))
+    }
+
+    @Test
+    void testCloseNonExistingGithubIssue() {
+        this.registerLibTester(new CloseGithubIssueLibTester(
+            'https://github.com/opensearch-project/opensearch-build',
+            'Test GH issue title',
+            'Test GH issue close comment'
+            ))
+        runScript("tests/jenkins/jobs/CloseGithubIssue_JenkinsFile")
         assertThat(getCommands('sh', 'script'), hasItem("{script=gh issue list --repo https://github.com/opensearch-project/opensearch-build -S \"Test GH issue title in:title\" --json number --jq '.[0].number', returnStdout=true}"))
-        assertThat(getCommands('sh', 'script'), hasItem("{script=gh issue close bbb\nccc -R opensearch-project/opensearch-build --comment \"Test GH issue close comment\", returnStdout=true}"))
+        assertThat(getCommands('println', 'AUTOCUT'), hasItem("No open distribution failure AUTOCUT issues found that needs to be closed for the repo https://github.com/opensearch-project/opensearch-build"))
     }
 
     def getCommands(method, text) {

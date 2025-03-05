@@ -37,15 +37,18 @@ class TestCreateGithubIssue extends BuildPipelineTest {
         helper.addShMock("date -d \"5 days ago\" +'%Y-%m-%d'") { script ->
             return [stdout: "2023-10-24", exitValue: 0]
         }
-        helper.addShMock("""gh issue list --repo https://github.com/opensearch-project/opensearch-build -S "Test GH issue title in:title" --label label101 --json number --jq '.[0].number'""") { script ->
+        helper.addShMock("""gh issue list --repo https://github.com/opensearch-project/opensearch-build -S "Test GH issue title in:title" --json number --jq '.[0].number'""") { script ->
             return [stdout: "22", exitValue: 0]
         }
         helper.addShMock("""gh issue list --repo https://github.com/opensearch-project/opensearch-build -S "Test GH issue title in:title is:closed closed:>=2023-10-24" --label label101 --json number --jq '.[0].number'""") { script ->
             return [stdout: "", exitValue: 0]
         }
+        helper.addShMock("""gh label list --repo https://github.com/opensearch-project/opensearch-build -S label101 --json name --jq '.[0].name'""") { script ->
+            return [stdout: "label101", exitValue: 0]
+        }
         super.testPipeline('tests/jenkins/jobs/CreateGithubIssue_Jenkinsfile')
         assertThat(getCommands('println', ''), hasItem("Issue already exists, adding a comment"))
-        assertThat(getCommands('sh', 'script'), hasItem("""{script=gh issue comment bbb\nccc --repo https://github.com/opensearch-project/opensearch-build --body \"Test GH issue body\", returnStdout=true}"""))
+        assertThat(getCommands('sh', 'script'), hasItem("""{script=gh issue comment 22 --repo https://github.com/opensearch-project/opensearch-build --body \"Test GH issue body\", returnStdout=true}"""))
     }
     
     @Test
@@ -137,7 +140,7 @@ class TestCreateGithubIssue extends BuildPipelineTest {
         helper.addShMock("date -d \"5 days ago\" +'%Y-%m-%d'") { script ->
             return [stdout: "2023-10-24", exitValue: 0]
         }
-        helper.addShMock("""gh issue list --repo https://github.com/opensearch-project/opensearch-build -S "Test GH issue title in:title" --label label101 --json number --jq '.[0].number'""") { script ->
+        helper.addShMock("""gh issue list --repo https://github.com/opensearch-project/opensearch-build -S "Test GH issue title in:title" --json number --jq '.[0].number'""") { script ->
             return [stdout: "22", exitValue: 0]
         }
         helper.addShMock("""gh issue list --repo https://github.com/opensearch-project/opensearch-build -S "Test GH issue title in:title is:closed closed:>=2023-10-24" --label label101 --json number --jq '.[0].number'""") { script ->
@@ -145,7 +148,7 @@ class TestCreateGithubIssue extends BuildPipelineTest {
         }
         super.testPipeline('tests/jenkins/jobs/EditGithubIssue_Jenkinsfile', 'tests/jenkins/jobs/EditGithubIssue_Jenkinsfile_IssueBody')
         assertThat(getCommands('println', ''), hasItem("Issue already exists, editing the issue body"))
-        assertThat(getCommands('sh', 'script'), hasItem("""{script=gh issue edit bbb\nccc --repo https://github.com/opensearch-project/opensearch-build --body-file issueBody.md, returnStdout=true}"""))
+        assertThat(getCommands('sh', 'script'), hasItem("""{script=gh issue edit 22 --repo https://github.com/opensearch-project/opensearch-build --body-file issueBody.md, returnStdout=true}"""))
     }
 
     def getCommands(method, text) {

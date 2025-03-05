@@ -1,6 +1,7 @@
    DockerCopy_Jenkinsfile.run()
       DockerCopy_Jenkinsfile.pipeline(groovy.lang.Closure)
          DockerCopy_Jenkinsfile.echo(Executing on agent [label:none])
+         DockerCopy_Jenkinsfile.stage(Image Copy, groovy.lang.Closure)
          DockerCopy_Jenkinsfile.stage(Parameters Check, groovy.lang.Closure)
             DockerCopy_Jenkinsfile.script(groovy.lang.Closure)
          DockerCopy_Jenkinsfile.stage(Copy Image to ECR/DockerHub, groovy.lang.Closure)

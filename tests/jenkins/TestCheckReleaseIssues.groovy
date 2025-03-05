@@ -100,7 +100,7 @@ class TestCheckReleaseIssues extends BuildPipelineTest {
             return [stdout: 'script returned exit code 1', exitValue: 1]
         }
         runScript('tests/jenkins/jobs/CheckReleaseIssues_Jenkinsfile')
-        assertThat(getCommands('error', 'GitHub'), hasItem("Error in triggering GitHub Actions workflows. Script returned error code: 1"))
+        assertThat(getCommands('error', 'GitHub'), hasItem("Error in triggering GitHub Actions workflows. script returned exit code 1"))
     }
 
     @Test

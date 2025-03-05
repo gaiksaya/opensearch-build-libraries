@@ -10,5 +10,4 @@
                      createGithubIssue.sh({script=date -d "5 days ago" +'%Y-%m-%d', returnStdout=true})
                      createGithubIssue.sh({script=gh issue list --repo https://github.com/opensearch-project/opensearch-build -S "Test GH issue title in:title is:closed closed:>=2023-10-24" --json number --jq '.[0].number', returnStdout=true})
                      createGithubIssue.println(Issue already exists, adding a comment)
-                     createGithubIssue.sh({script=gh issue comment bbb
-ccc --repo https://github.com/opensearch-project/opensearch-build --body "Test GH issue body", returnStdout=true})
+                     createGithubIssue.sh({script=gh issue comment 22 --repo https://github.com/opensearch-project/opensearch-build --body "Test GH issue body", returnStdout=true})

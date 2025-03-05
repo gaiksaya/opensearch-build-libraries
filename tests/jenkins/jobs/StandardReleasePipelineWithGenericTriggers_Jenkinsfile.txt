@@ -9,10 +9,7 @@
                   standardReleasePipelineWithGenericTrigger.usernamePassword({credentialsId=jenkins-github-bot-token, usernameVariable=GITHUB_USER, passwordVariable=GITHUB_TOKEN})
                   standardReleasePipelineWithGenericTrigger.withCredentials([[GITHUB_USER, GITHUB_TOKEN]], groovy.lang.Closure)
                      standardReleasePipelineWithGenericTrigger.sh({script=curl -H 'Accept: application/vnd.github+json' -H 'Authorization: Bearer GITHUB_TOKEN' https://api.github.com/repos/owner/name/releases/1234/assets, returnStdout=true})
-                     standardReleasePipelineWithGenericTrigger.readJSON({text=
-bbb
-ccc
-})
+                     standardReleasePipelineWithGenericTrigger.readJSON({text=})
                      standardReleasePipelineWithGenericTrigger.echo(Downloading artifacts from https://api.github.com/repos/owner/reponame/releases/assets/123456)
                      standardReleasePipelineWithGenericTrigger.sh(curl -J -L -H 'Accept: application/octet-stream' -H 'Authorization: Bearer GITHUB_TOKEN' https://api.github.com/repos/owner/reponame/releases/assets/123456 -o artifacts.tar.gz && tar -xvf artifacts.tar.gz)
             standardReleasePipelineWithGenericTrigger.stage(Release, groovy.lang.Closure)

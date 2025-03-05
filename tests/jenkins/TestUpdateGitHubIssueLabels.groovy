@@ -26,6 +26,10 @@ class TestUpdateGitHubIssueLabels extends BuildPipelineTest {
     @Before
     void setUp() {
         super.setUp()
+        helper.addShMock("""gh issue list --repo https://github.com/opensearch-project/opensearch-build -S "Test GH issue title in:title" --json number --jq '.[0].number'""") { script ->
+            return [stdout: "22", exitValue: 0]
+        }
+        
     }
 
     @Test
@@ -128,7 +132,7 @@ class TestUpdateGitHubIssueLabels extends BuildPipelineTest {
         assertThrows(Exception) {
             runScript('tests/jenkins/jobs/UpdateGitHubIssueLabels_Jenkinsfile')
         }
-        assertThat(getCommands('error', ''), hasItem('Unable to edit GitHub issue for https://github.com/opensearch-project/opensearch-build, Script returned error code: 127'))
+        assertThat(getCommands('error', ''), hasItem('Unable to edit GitHub issue for https://github.com/opensearch-project/opensearch-build, script returned exit code 127'))
     }
     @Test
     void testAction(){

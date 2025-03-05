@@ -1,6 +1,7 @@
    DockerCopyAllTags_Jenkinsfile.run()
       DockerCopyAllTags_Jenkinsfile.pipeline(groovy.lang.Closure)
          DockerCopyAllTags_Jenkinsfile.echo(Executing on agent [label:none])
+         DockerCopyAllTags_Jenkinsfile.stage(Image Copy, groovy.lang.Closure)
          DockerCopyAllTags_Jenkinsfile.stage(Parameters Check, groovy.lang.Closure)
             DockerCopyAllTags_Jenkinsfile.script(groovy.lang.Closure)
          DockerCopyAllTags_Jenkinsfile.stage(Copy Image to ECR/DockerHub with All Tags, groovy.lang.Closure)

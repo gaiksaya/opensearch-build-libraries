@@ -35,14 +35,18 @@
                      createGithubIssue.withCredentials([[GITHUB_USER, GITHUB_TOKEN]], groovy.lang.Closure)
                         createGithubIssue.sh({script=gh issue list --repo https://github.com/opensearch-project/notifications.git -S "[AUTOCUT] Distribution Build Failed for notifications-2.2.0 in:title" --json number --jq '.[0].number', returnStdout=true})
                         createGithubIssue.sh({script=date -d "3 days ago" +'%Y-%m-%d', returnStdout=true})
-                        createGithubIssue.sh({script=gh issue list --repo https://github.com/opensearch-project/notifications.git -S "[AUTOCUT] Distribution Build Failed for notifications-2.2.0 in:title is:closed closed:>=bbb
-ccc" --json number --jq '.[0].number', returnStdout=true})
-                        createGithubIssue.println(Issue already exists, editing the issue body)
-                        createGithubIssue.sh({script=gh issue edit bbb
-ccc --repo https://github.com/opensearch-project/notifications.git --body "***Build Failed Error***: **notifications failed during the distribution build for version: 2.2.0.**
+                        createGithubIssue.sh({script=gh issue list --repo https://github.com/opensearch-project/notifications.git -S "[AUTOCUT] Distribution Build Failed for notifications-2.2.0 in:title is:closed closed:>=" --json number --jq '.[0].number', returnStdout=true})
+                        createGithubIssue.println(Creating new issue)
+                        createGithubIssue.sh({script=gh label list --repo https://github.com/opensearch-project/notifications.git -S autocut --json name --jq '.[0].name', returnStdout=true})
+                        createGithubIssue.println(autocut label is missing. Creating the missing label)
+                        createGithubIssue.sh({script=gh label create autocut --repo https://github.com/opensearch-project/notifications.git, returnStdout=true})
+                        createGithubIssue.sh({script=gh label list --repo https://github.com/opensearch-project/notifications.git -S v2.2.0 --json name --jq '.[0].name', returnStdout=true})
+                        createGithubIssue.println(v2.2.0 label is missing. Creating the missing label)
+                        createGithubIssue.sh({script=gh label create v2.2.0 --repo https://github.com/opensearch-project/notifications.git, returnStdout=true})
+                        createGithubIssue.sh({script=gh issue create --title "[AUTOCUT] Distribution Build Failed for notifications-2.2.0" --body "***Build Failed Error***: **notifications failed during the distribution build for version: 2.2.0.**
                     Please see build log at www.example.com/job/build_url/32/display/redirect.
                     The failed build stage will be marked as unstable :warning: . Please see ./build.sh step for more details.
-                    Checkout the [wiki](https://github.com/opensearch-project/opensearch-build/wiki/Building-an-OpenSearch-and-OpenSearch-Dashboards-Distribution) to reproduce the failure locally.", returnStdout=true})
+                    Checkout the [wiki](https://github.com/opensearch-project/opensearch-build/wiki/Building-an-OpenSearch-and-OpenSearch-Dashboards-Distribution) to reproduce the failure locally." --label "autocut,v2.2.0" --label "untriaged" --repo https://github.com/opensearch-project/notifications.git, returnStdout=true})
                   updateBuildFailureIssues.sleep({time=3, unit=SECONDS})
                   updateBuildFailureIssues.createGithubIssue({repoUrl=https://github.com/opensearch-project/asynchronous-search.git, issueTitle=[AUTOCUT] Distribution Build Failed for asynchronous-search-2.2.0, issueBody=***Build Failed Error***: **asynchronous-search failed during the distribution build for version: 2.2.0.**
                     Please see build log at www.example.com/job/build_url/32/display/redirect.
@@ -52,11 +56,9 @@ ccc --repo https://github.com/opensearch-project/notifications.git --body "***Bu
                      createGithubIssue.withCredentials([[GITHUB_USER, GITHUB_TOKEN]], groovy.lang.Closure)
                         createGithubIssue.sh({script=gh issue list --repo https://github.com/opensearch-project/asynchronous-search.git -S "[AUTOCUT] Distribution Build Failed for asynchronous-search-2.2.0 in:title" --json number --jq '.[0].number', returnStdout=true})
                         createGithubIssue.sh({script=date -d "3 days ago" +'%Y-%m-%d', returnStdout=true})
-                        createGithubIssue.sh({script=gh issue list --repo https://github.com/opensearch-project/asynchronous-search.git -S "[AUTOCUT] Distribution Build Failed for asynchronous-search-2.2.0 in:title is:closed closed:>=bbb
-ccc" --json number --jq '.[0].number', returnStdout=true})
+                        createGithubIssue.sh({script=gh issue list --repo https://github.com/opensearch-project/asynchronous-search.git -S "[AUTOCUT] Distribution Build Failed for asynchronous-search-2.2.0 in:title is:closed closed:>=" --json number --jq '.[0].number', returnStdout=true})
                         createGithubIssue.println(Issue already exists, editing the issue body)
-                        createGithubIssue.sh({script=gh issue edit bbb
-ccc --repo https://github.com/opensearch-project/asynchronous-search.git --body "***Build Failed Error***: **asynchronous-search failed during the distribution build for version: 2.2.0.**
+                        createGithubIssue.sh({script=gh issue edit 22 --repo https://github.com/opensearch-project/asynchronous-search.git --body "***Build Failed Error***: **asynchronous-search failed during the distribution build for version: 2.2.0.**
                     Please see build log at www.example.com/job/build_url/32/display/redirect.
                     The failed build stage will be marked as unstable :warning: . Please see ./build.sh step for more details.
                     Checkout the [wiki](https://github.com/opensearch-project/opensearch-build/wiki/Building-an-OpenSearch-and-OpenSearch-Dashboards-Distribution) to reproduce the failure locally.", returnStdout=true})
@@ -66,7 +68,5 @@ ccc --repo https://github.com/opensearch-project/asynchronous-search.git --body 
                      closeGithubIssue.usernamePassword({credentialsId=jenkins-github-bot-token, passwordVariable=GITHUB_TOKEN, usernameVariable=GITHUB_USER})
                      closeGithubIssue.withCredentials([[GITHUB_USER, GITHUB_TOKEN]], groovy.lang.Closure)
                         closeGithubIssue.sh({script=gh issue list --repo https://github.com/opensearch-project/sql.git -S "[AUTOCUT] Distribution Build Failed for sql-2.2.0 in:title" --json number --jq '.[0].number', returnStdout=true})
-                        closeGithubIssue.sh({script=gh issue close bbb
-ccc -R opensearch-project/sql --comment "Closing the issue as the distribution build for sql has passed for version: **2.2.0**.
-                    Please see build log at www.example.com/job/build_url/32/display/redirect", returnStdout=true})
+                        closeGithubIssue.println(No open distribution failure AUTOCUT issues found that needs to be closed for the repo https://github.com/opensearch-project/sql.git)
                   updateBuildFailureIssues.sleep({time=3, unit=SECONDS})

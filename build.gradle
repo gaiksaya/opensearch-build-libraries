@@ -13,6 +13,11 @@ plugins {
     id 'jacoco'
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
 repositories {
     mavenCentral()
     maven { url 'https://repo.jenkins-ci.org/releases/' }
@@ -26,7 +31,7 @@ dependencies {
     implementation group: 'com.cloudbees', name: 'groovy-cps', version: '1.31'
     testImplementation group: 'org.yaml', name: 'snakeyaml', version: '2.0'
     testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.24.2'
-    testImplementation group: 'com.lesfurets', name:'jenkins-pipeline-unit', version: '1.13'
+    testImplementation group: 'com.lesfurets', name:'jenkins-pipeline-unit', version: '1.24'
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.12.0'
 }
 
@@ -78,7 +83,7 @@ sharedLibrary {
         dependency('org.jenkins-ci.plugins', 'script-security', '1229.v4880b_b_e905a_6')
         dependency('org.jenkins-ci.plugins', 'credentials', '1112.vc87b_7a_3597f6')
         dependency('org.jenkins-ci.plugins', 'git-client', '3.11.1')
-        dependency('org.jenkins-ci.plugins', 'junit', '1166.1168.vd6b_8042a_06de')
+        dependency('org.jenkins-ci.plugins', 'junit', '1316.v13ec14a_de230')
         dependency('org.jenkins-ci.plugins', 'mailer', '408.vd726a_1130320') // https://repo.jenkins-ci.org/public/org/jenkins-ci/plugins/mailer/
     }
 }
@@ -100,7 +105,7 @@ test {
 }
 
 jacoco {
-    toolVersion = '0.8.7'
+    toolVersion = '0.8.12'
 }
 
 jacocoTestReport {
@@ -118,10 +123,73 @@ jacocoTestReport {
                         '**/utils/*'
                 ],
                 excludes: [
-                        '**/*\$_get_closure*'
+                        '**/*\$_get_closure*',
+                        '**/*\$_*closure*'
                 ]
         )
     }
+    //     afterEvaluate {
+    //     /*
+    //      * There are 2 location where the ".class" files exist:
+    //      * 1) "$buildDir/jacoco/classpathdumps": This is where jacoco puts the class files which have been triggered by
+    //      *    the tests.
+    //      * 2) "$buildDir/classes/groovy/main": This is where gradle places all the class files during compilation
+    //      *
+    //      * It should be enough to just include the file tree from (1) above. However, this will result in not
+    //      * considering any of the files which has not been tested.
+    //      * In order to consider those as well, we add the class files from (2) as well. However, if we try to add the
+    //      * same class multiple times, jacoco will complain. Therefore, we need to add all the files from (1), and the
+    //      * files from (2) which are not in (1) already.
+    //      */
+    //     String jacocoClassesPath = "$buildDir/jacoco/classpathdumps"
+    //     String gradleClassesPath = "$buildDir/classes/groovy/main"
+    //     // The single "*" here indicates the "default" package which in our case is the "vars" dir
+    //     List includesList = [
+    //                     '**/*_Jenkinsfile.*',
+    //                     '**/jenkins/*',
+    //                     '**/gradlecheck/*',
+    //                     '**/utils/*'
+    //             ]
+    //     List excludesList = [
+    //                     '**/*\$_get_closure*',
+    //                     '**/*\$_*closure*'
+    //             ]
+
+    //     List allTrees = [
+    //         fileTree(dir: jacocoClassesPath, includes: includesList, excludes: excludesList),
+    //         fileTree(dir: gradleClassesPath, includes: includesList, excludes: excludesList).filter { f ->
+    //             /*
+    //              * In this filter, we want to remove all the files which were already covered by jacoco in the first
+    //              * `fileTree` above. This filter is only executed after the tests have completed while jacoco is
+    //              * generating the reports. Therefore, we cannot find the files list earlier. Although here were are
+    //              * finding the files list multiple times (for each file `f`), this is still acceptable because number of
+    //              * files are limited anyway.
+    //              */
+    //             // This list will collect all the ".class" files from jacoco classes path folder
+    //             List fs = new File(jacocoClassesPath).listFiles().findAll { it.name.endsWith(".class") }
+    //             /*
+    //              * Next we need to keep only the file name (without path). Additionally, jacoco adds a session ID to the
+    //              * file name (e.g. something.class would look something like something.93153c79e479a123.class). What we
+    //              * are interested in here is only the "something.class" without the session ID.
+    //              * The `toString()` is also required otherwise the `.contains()` we do next will be comparing a G-String
+    //              * to a String and not match.
+    //              */
+    //             fs = fs.collect { "${it.name.split('\\.')[0]}.class".toString() }
+    //             // We only want to consider the current file `f` if its name does not already exist in `fs`.
+    //             boolean keepFile = !fs.contains(f.name)
+    //             /*
+    //              * XXX - it's enough to just return the value of `keepFile` without deletion but we do so to simplify
+    //              * the call to the jacoco plugin from Jenkins. If we don't do so, we'll need to do the filtering again
+    //              * from Jenkinsfile as well.
+    //              */
+    //             if (!keepFile) {
+    //                 f.delete()
+    //             }
+    //             return keepFile
+    //         },
+    //     ]
+    //     classDirectories.from = allTrees
+    // }
 
     reports {
         xml.required = true

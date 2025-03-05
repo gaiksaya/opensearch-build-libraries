@@ -53,12 +53,9 @@
                   addRcDetailsComment.sh({script=curl -s -XGET "https://build.ci.opensearch.org/blue/rest/organizations/jenkins/pipelines/docker-scan/runs/4439/artifacts/" | jq -r '.[] | select(.name | endswith(".txt")) | .url', returnStdout=true})
                   addRcDetailsComment.sh({script=curl -s -XGET "https://build.ci.opensearch.org/job/docker-scan/4439/artifact/scan_docker_image.txt", returnStdout=true})
                   addRcDetailsComment.sh({script=curl -s -XGET "https://build.ci.opensearch.org/blue/rest/organizations/jenkins/pipelines/distribution-build-opensearch-dashboards/runs/8260/nodes/" | jq '.[] | select(.actions[].description? | contains("docker-scan")) | .actions[] | select(.description | contains("docker-scan")) | ._links.self.href', returnStdout=true})
-                  addRcDetailsComment.sh({script=curl -s -XGET "https://build.ci.opensearch.orgbbb
-ccc" | jq -r '._links.artifacts.href', returnStdout=true})
-                  addRcDetailsComment.sh({script=curl -s -XGET "https://build.ci.opensearch.orgbbb
-ccc" | jq -r '.[] | select(.name | endswith(".txt")) | .url', returnStdout=true})
-                  addRcDetailsComment.sh({script=curl -s -XGET "https://build.ci.opensearch.orgbbb
-ccc", returnStdout=true})
+                  addRcDetailsComment.sh({script=curl -s -XGET "https://build.ci.opensearch.org/blue/rest/organizations/jenkins/pipelines/docker-scan/runs/4440/" | jq -r '._links.artifacts.href', returnStdout=true})
+                  addRcDetailsComment.sh({script=curl -s -XGET "https://build.ci.opensearch.org/blue/rest/organizations/jenkins/pipelines/docker-scan/runs/4440/artifacts/" | jq -r '.[] | select(.name | endswith(".txt")) | .url', returnStdout=true})
+                  addRcDetailsComment.sh({script=curl -s -XGET "https://build.ci.opensearch.org/job/docker-scan/4440/artifact/scan_docker_image.txt", returnStdout=true})
                   addRcDetailsComment.libraryResource(release/rc-details-template.md)
                   addRcDetailsComment.writeFile({file=rc-details-comment-body.md, text=## See OpenSearch RC 5 and OpenSearch-Dashboards RC 5 details
 <details><summary>OpenSearch 5 and OpenSearch-Dashboards 5 details</summary>
@@ -209,15 +206,11 @@ Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0))
 <details><summary>OpenSearch-Dashboards Docker-Scan Results</summary>
 <p>
 
-[Workflow run](https://build.ci.opensearch.orgbbb
-ccc)
+[Workflow run](https://build.ci.opensearch.org/job/docker-scan/4440/artifact/scan_docker_image.txt)
 <pre>
 <code>
 
-
-bbb
-ccc
-
+Total: 2 (UNKNOWN: 1, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0))
 
 </code>
 </pre>

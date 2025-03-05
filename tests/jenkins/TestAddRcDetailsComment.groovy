@@ -237,6 +237,22 @@ class TestAddRcDetailsComment extends BuildPipelineTest {
         helper.addShMock('curl -s -XGET "https://build.ci.opensearch.org/job/docker-scan/4439/artifact/scan_docker_image.txt"') { script ->
             return [stdout: 'Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0))', exitValue: 0]
         }
+
+        helper.addShMock("""curl -s -XGET "https://build.ci.opensearch.org/blue/rest/organizations/jenkins/pipelines/distribution-build-opensearch-dashboards/runs/8260/nodes/" | jq '.[] | select(.actions[].description? | contains("docker-scan")) | .actions[] | select(.description | contains("docker-scan")) | ._links.self.href'""") { script ->
+            return [stdout: '/blue/rest/organizations/jenkins/pipelines/docker-scan/runs/4440/', exitValue: 0]
+        }
+
+        helper.addShMock("""curl -s -XGET "https://build.ci.opensearch.org/blue/rest/organizations/jenkins/pipelines/docker-scan/runs/4440/" | jq -r '._links.artifacts.href'""") { script ->
+            return [stdout: '/blue/rest/organizations/jenkins/pipelines/docker-scan/runs/4440/artifacts/', exitValue: 0]
+        }
+
+        helper.addShMock("""curl -s -XGET "https://build.ci.opensearch.org/blue/rest/organizations/jenkins/pipelines/docker-scan/runs/4440/artifacts/" | jq -r '.[] | select(.name | endswith(".txt")) | .url'""") { script ->
+            return [stdout: '/job/docker-scan/4440/artifact/scan_docker_image.txt', exitValue: 0]
+        }
+
+        helper.addShMock('curl -s -XGET "https://build.ci.opensearch.org/job/docker-scan/4440/artifact/scan_docker_image.txt"') { script ->
+            return [stdout: 'Total: 2 (UNKNOWN: 1, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0))', exitValue: 0]
+        }
     }
 
     @Test

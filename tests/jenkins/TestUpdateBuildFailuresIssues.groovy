@@ -109,15 +109,15 @@ class TestUpdateBuildFailuresIssues extends BuildPipelineTest {
 
     @Test
     public void testGithubIssueEdit() {
-        helper.addShMock("""gh issue list --repo https://github.com/opensearch-project/asynchronous-search.git -S "[AUTOCUT] Distribution Build Failed for asynchronous-search-2.2.0 in:title" --label autocut,v2.2.0 --json number --jq '.[0].number'""") { script ->
+        helper.addShMock("""gh issue list --repo https://github.com/opensearch-project/asynchronous-search.git -S "[AUTOCUT] Distribution Build Failed for asynchronous-search-2.2.0 in:title" --json number --jq '.[0].number'""") { script ->
             return [stdout: "22", exitValue: 0]
         }
-        helper.addShMock("""gh issue list --repo https://github.com/opensearch-project/asynchronous-search.git -S "[AUTOCUT] Distribution Build Failed for asynchronous-search-2.2.0 in:title is:closed closed:>=2023-10-24" --label autocut,v2.2.0 --json number --jq '.[0].number'""") { script ->
+        helper.addShMock("""gh issue list --repo https://github.com/opensearch-project/asynchronous-search.git -S "[AUTOCUT] Distribution Build Failed for asynchronous-search-2.2.0 in:title is:closed closed:>=" --json number --jq '.[0].number'""") { script ->
             return [stdout: "", exitValue: 0]
         }
         super.testPipeline('tests/jenkins/jobs/UpdateBuildFailureIssue_Jenkinsfile')
         assertThat(getCommands('println', ''), hasItem('Issue already exists, editing the issue body'))
-        assertThat(getCommands('sh', 'script'), hasItem("{script=gh issue edit bbb\nccc --repo https://github.com/opensearch-project/asynchronous-search.git --body \"***Build Failed Error***: **asynchronous-search failed during the distribution build for version: 2.2.0.**\n                    Please see build log at www.example.com/job/build_url/32/display/redirect.\n                    The failed build stage will be marked as unstable :warning: . Please see ./build.sh step for more details.\n                    Checkout the [wiki](https://github.com/opensearch-project/opensearch-build/wiki/Building-an-OpenSearch-and-OpenSearch-Dashboards-Distribution) to reproduce the failure locally.\", returnStdout=true}"))
+        assertThat(getCommands('sh', 'script'), hasItem("{script=gh issue edit 22 --repo https://github.com/opensearch-project/asynchronous-search.git --body \"***Build Failed Error***: **asynchronous-search failed during the distribution build for version: 2.2.0.**\n                    Please see build log at www.example.com/job/build_url/32/display/redirect.\n                    The failed build stage will be marked as unstable :warning: . Please see ./build.sh step for more details.\n                    Checkout the [wiki](https://github.com/opensearch-project/opensearch-build/wiki/Building-an-OpenSearch-and-OpenSearch-Dashboards-Distribution) to reproduce the failure locally.\", returnStdout=true}"))
     }
 
     @Test
@@ -125,12 +125,11 @@ class TestUpdateBuildFailuresIssues extends BuildPipelineTest {
         helper.addShMock("date -d \"3 days ago\" +'%Y-%m-%d'") { script ->
             return [stdout: "2023-10-24", exitValue: 0]
         }
-        helper.addShMock("""gh issue list --repo https://github.com/opensearch-project/sql.git -S "[AUTOCUT] Distribution Build Failed for sql-2.2.0 in:title" --label autocut,v2.2.0 --json number --jq '.[0].number'""") { script ->
+        helper.addShMock("""gh issue list --repo https://github.com/opensearch-project/sql.git -S "[AUTOCUT] Distribution Build Failed for sql-2.2.0 in:title" --json number --jq '.[0].number'""") { script ->
             return [stdout: "30", exitValue: 0]
         }
         runScript('tests/jenkins/jobs/UpdateBuildFailureIssue_Jenkinsfile')
-        assertThat(getCommands('sh', 'sql'), hasItem("{script=gh issue list --repo https://github.com/opensearch-project/sql.git -S \"[AUTOCUT] Distribution Build Failed for sql-2.2.0 in:title\" --json number --jq '.[0].number', returnStdout=true}"))
-        assertThat(getCommands('sh', 'sql'), hasItem("{script=gh issue close bbb\nccc -R opensearch-project/sql --comment \"Closing the issue as the distribution build for sql has passed for version: **2.2.0**.\n                    Please see build log at www.example.com/job/build_url/32/display/redirect\", returnStdout=true}"))
+        assertThat(getCommands('sh', 'sql'), hasItem("{script=gh issue close 30 -R opensearch-project/sql --comment \"Closing the issue as the distribution build for sql has passed for version: **2.2.0**.\n                    Please see build log at www.example.com/job/build_url/32/display/redirect\", returnStdout=true}"))
     }
 
     @Test
@@ -138,12 +137,12 @@ class TestUpdateBuildFailuresIssues extends BuildPipelineTest {
         helper.addShMock("date -d \"3 days ago\" +'%Y-%m-%d'") { script ->
             return [stdout: "2023-10-24", exitValue: 0]
         }
-        helper.addShMock("""gh issue list --repo https://github.com/opensearch-project/notifications.git -S "[AUTOCUT] Distribution Build Failed for notifications-2.2.0 in:title" --label autocut,v2.2.0 --json number --jq '.[0].number'""") { script ->
+        helper.addShMock("""gh issue list --repo https://github.com/opensearch-project/notifications.git -S \"[AUTOCUT] Distribution Build Failed for notifications-2.2.0 in:title\" --json number --jq '.[0].number'""") { script ->
             return [stdout: "20", exitValue: 0]
         }
         runScript('tests/jenkins/jobs/UpdateBuildFailureIssue_Jenkinsfile')
-        assertThat(getCommands('sh', 'notifications'), not(hasItem("{script=gh issue close bbb\nccc -R opensearch-project/notifications --comment \"Closing the issue as the distribution build for notifications has passed for version: **2.2.0**.\n                    Please see build log at www.example.com/job/build_url/32/display/redirect\", returnStdout=true}")))
-        assertThat(getCommands('sh', 'script'), hasItem("{script=gh issue edit bbb\nccc --repo https://github.com/opensearch-project/notifications.git --body \"***Build Failed Error***: **notifications failed during the distribution build for version: 2.2.0.**\n                    Please see build log at www.example.com/job/build_url/32/display/redirect.\n                    The failed build stage will be marked as unstable :warning: . Please see ./build.sh step for more details.\n                    Checkout the [wiki](https://github.com/opensearch-project/opensearch-build/wiki/Building-an-OpenSearch-and-OpenSearch-Dashboards-Distribution) to reproduce the failure locally.\", returnStdout=true}"))
+        assertThat(getCommands('sh', 'notifications'), not(hasItem("{script=gh issue close 20 -R opensearch-project/notifications --comment \"Closing the issue as the distribution build for notifications has passed for version: **2.2.0**.\n                    Please see build log at www.example.com/job/build_url/32/display/redirect\", returnStdout=true}")))
+        assertThat(getCommands('sh', 'script'), hasItem("{script=gh issue edit 20 --repo https://github.com/opensearch-project/notifications.git --body \"***Build Failed Error***: **notifications failed during the distribution build for version: 2.2.0.**\n                    Please see build log at www.example.com/job/build_url/32/display/redirect.\n                    The failed build stage will be marked as unstable :warning: . Please see ./build.sh step for more details.\n                    Checkout the [wiki](https://github.com/opensearch-project/opensearch-build/wiki/Building-an-OpenSearch-and-OpenSearch-Dashboards-Distribution) to reproduce the failure locally.\", returnStdout=true}"))
     }
 
     def getCommands(method, text) {

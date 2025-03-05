@@ -58,6 +58,8 @@ class TestStandardReleasePipelineWithGenericTriggers extends BuildPipelineTest {
             "browser_download_url": "https://github.com/owner/reponame/releases/download/untagged-959f2cde363466e20879/artifacts.tar.gz"
         }]'''
         helper.registerAllowedMethod("GenericTrigger", [Map.class], null)
+        binding.setVariable('ref', 'tags/1.0.0')
+        binding.setVariable('repository', 'https://github.com/somerepo')
         binding.setVariable('tag', '1.0.0')
         binding.setVariable('release_url', 'https://api.github.com/repos/Codertocat/Hello-World/releases/17372790')
         binding.setVariable('assets_url', 'https://api.github.com/repos/owner/name/releases/1234/assets')

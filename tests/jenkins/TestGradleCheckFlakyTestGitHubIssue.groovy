@@ -28,8 +28,11 @@ class TestGradleCheckFlakyTestGitHubIssue extends BuildPipelineTest {
 
     @Test
     public void testDefaultIssueEdit() {
+        helper.addShMock("""gh issue list --repo https://github.com/opensearch-project/OpenSearch -S "[AUTOCUT] Gradle Check Flaky Test Report for SampleTest in:title" --json number --jq '.[0].number'""") { script ->
+            return [stdout: "23", exitValue: 0]
+        }
         super.testPipeline("tests/jenkins/jobs/TestGradleCheckFlakyTestGitHubIssue_Jenkinsfile", "tests/jenkins/jobs/TestGradleCheckFlakyTestGitHubIssueEdit_Jenkinsfile")
-        assertThat(getCommands('sh', 'script'), hasItem("{script=gh issue edit bbb\nccc --repo https://github.com/opensearch-project/OpenSearch --body-file \"SampleTest.md\", returnStdout=true}"))
+        assertThat(getCommands('sh', 'script'), hasItem("{script=gh issue edit 23 --repo https://github.com/opensearch-project/OpenSearch --body-file \"SampleTest.md\", returnStdout=true}"))
     }
 
     @Test

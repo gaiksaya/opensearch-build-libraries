@@ -13,7 +13,7 @@ import org.junit.*
 import groovy.json.JsonOutput
 import groovy.mock.interceptor.MockFor
 
-class FetchPostMergeFailedTestClassTest {
+class TestFetchPostMergeFailedTestClass {
 
     private FetchPostMergeFailedTestClass fetchPostMergeFailedTestClass
     private final String metricsUrl = "http://example.com"
