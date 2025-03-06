@@ -14,6 +14,7 @@ plugins {
     id 'java'
     id 'groovy'
     id 'jacoco'
+    id 'com.dorongold.task-tree' version '3.0.0'
 }
 
 repositories {
@@ -86,7 +87,6 @@ sharedLibrary {
         dependency('org.jenkins-ci.plugins.workflow', 'workflow-cps', '3606.v0b_d8b_e512dcf')
         dependency('org.jenkins-ci.plugins.workflow', 'workflow-multibranch', '2.26.1')
         dependency('org.jenkins-ci.plugins', 'pipeline-input-step', '456.vd8a_957db_5b_e9') // https://repo.jenkins-ci.org/public/org/jenkins-ci/plugins/pipeline-input-step/
-        dependency('org.jenkins-ci.plugins', 'script-security', '1229.v4880b_e905a_6')
         dependency('org.jenkins-ci.plugins', 'credentials', '1112.vc87b_7a_3597f6')
         dependency('org.jenkins-ci.plugins', 'git-client', '3.11.1')
         dependency('org.jenkins-ci.plugins', 'junit', '1312.v1a_235a_b_94a_31')
@@ -111,7 +111,7 @@ test {
         classDumpDir = file(classPathDumpsDir)
     }
 
-    finalizedBy jacocoTestReport
+    finalizedBy "jacocoTestReports"
 }
 
 jacocoTestReport {
@@ -149,6 +149,7 @@ task jacocoParseClassDumps {
 }
 
 task jacocoTestReports {
+    dependsOn jacocoParseClassDumps
     def classesDirs = []
 
     classesDirs << "${sourceSets.main.groovy.outputDir}"
