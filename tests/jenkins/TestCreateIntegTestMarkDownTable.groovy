@@ -7,9 +7,10 @@
  * compatible open source license.
  */
 
-package jenkins
+package jenkins.tests
 
 import org.junit.*
+import jenkins.CreateIntegTestMarkDownTable
 
 class TestCreateIntegTestMarkDownTable  {
 

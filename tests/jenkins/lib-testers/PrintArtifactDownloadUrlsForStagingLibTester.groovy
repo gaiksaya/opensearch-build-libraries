@@ -8,6 +8,8 @@
  */
 import static org.hamcrest.MatcherAssert.assertThat
 import static org.hamcrest.core.IsNull.notNullValue
+import jenkins.tests.LibFunctionTester
+
 
 class PrintArtifactDownloadUrlsForStagingLibTester extends LibFunctionTester {
 

@@ -7,10 +7,11 @@
  * compatible open source license.
  */
 
-package gradlecheck
+package gradlecheck.tests
 
 import org.junit.Test
 import static org.junit.Assert.assertEquals
+import gradlecheck.ParseMarkDownTable
 
 class ParseMarkDownTableTest {
 

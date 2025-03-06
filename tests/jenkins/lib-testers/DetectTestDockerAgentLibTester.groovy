@@ -7,6 +7,7 @@
  * compatible open source license.
  */
 import org.yaml.snakeyaml.Yaml
+import jenkins.tests.LibFunctionTester
 
 
 class DetectTestDockerAgentLibTester extends LibFunctionTester {

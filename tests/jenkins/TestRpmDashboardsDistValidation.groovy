@@ -7,7 +7,7 @@
  * compatible open source license.
  */
 
-
+package jenkins.tests
 import jenkins.tests.BuildPipelineTest
 import org.junit.Before
 import org.junit.Test

@@ -7,7 +7,7 @@
  * compatible open source license.
  */
 
-package gradlecheck;
+package gradlecheck.tests
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import gradlecheck.MarkdownComparator;
 
 class MarkdownComparatorTest {
 

@@ -6,16 +6,14 @@
  * compatible open source license.
  */
 
+import java.nio.file.Files
+import java.nio.file.Paths
+
 plugins {
     id 'com.mkobit.jenkins.pipelines.shared-library' version '0.10.1'
     id 'java'
     id 'groovy'
     id 'jacoco'
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
 }
 
 repositories {
@@ -25,13 +23,18 @@ repositories {
     mavenLocal()
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
 dependencies {
     testImplementation group: 'junit', name: 'junit', version: '4.13.2'
     implementation group: 'org.codehaus.groovy', name: 'groovy-all', version: '3.0.15', ext: 'pom'
     implementation group: 'com.cloudbees', name: 'groovy-cps', version: '1.31'
     testImplementation group: 'org.yaml', name: 'snakeyaml', version: '2.0'
     testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.24.2'
-    testImplementation group: 'com.lesfurets', name:'jenkins-pipeline-unit', version: '1.24'
+    testImplementation group: 'com.lesfurets', name:'jenkins-pipeline-unit', version: '1.20'
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.12.0'
 }
 
@@ -46,6 +49,9 @@ configurations.all {
         force group: 'org.jenkins-ci.plugins', name: 'durable-task', version: '547.vd1ea_007d100c'
     }
 }
+
+def classPathDumpsDir = "$buildDir/jacoco/classpathdumps"
+def parsedClassPathDumpsDir = "$buildDir/jacoco/parsedclasspathdumps"
 
 sourceSets {
     main {
@@ -80,12 +86,16 @@ sharedLibrary {
         dependency('org.jenkins-ci.plugins.workflow', 'workflow-cps', '3606.v0b_d8b_e512dcf')
         dependency('org.jenkins-ci.plugins.workflow', 'workflow-multibranch', '2.26.1')
         dependency('org.jenkins-ci.plugins', 'pipeline-input-step', '456.vd8a_957db_5b_e9') // https://repo.jenkins-ci.org/public/org/jenkins-ci/plugins/pipeline-input-step/
-        dependency('org.jenkins-ci.plugins', 'script-security', '1229.v4880b_b_e905a_6')
+        dependency('org.jenkins-ci.plugins', 'script-security', '1229.v4880b_e905a_6')
         dependency('org.jenkins-ci.plugins', 'credentials', '1112.vc87b_7a_3597f6')
         dependency('org.jenkins-ci.plugins', 'git-client', '3.11.1')
-        dependency('org.jenkins-ci.plugins', 'junit', '1316.v13ec14a_de230')
+        dependency('org.jenkins-ci.plugins', 'junit', '1312.v1a_235a_b_94a_31')
         dependency('org.jenkins-ci.plugins', 'mailer', '408.vd726a_1130320') // https://repo.jenkins-ci.org/public/org/jenkins-ci/plugins/mailer/
     }
+}
+
+jacoco {
+    toolVersion = '0.8.7'
 }
 
 test {
@@ -98,14 +108,10 @@ test {
     }
 
     jacoco {
-        classDumpDir = file("$buildDir/jacoco/classpathdumps")
+        classDumpDir = file(classPathDumpsDir)
     }
 
     finalizedBy jacocoTestReport
-}
-
-jacoco {
-    toolVersion = '0.8.12'
 }
 
 jacocoTestReport {
@@ -113,9 +119,15 @@ jacocoTestReport {
 
     sourceSets sourceSets.main
 
+    reports {
+        xml.required = true
+        html.required = false
+        xml.destination file("${buildDir}/reports/jacoco/xml/${System.getProperty('coverageFileName', 'jacoco.xml')}")
+    }
+
     afterEvaluate {
-        classDirectories.from = fileTree(
-                dir: "$buildDir/jacoco/classpathdumps",
+            classDirectories.from = fileTree(
+                dir: "${System.getProperty('coverageClassesDir', sourceSets.main.groovy.outputDir.path)}",
                 includes: [
                         '**/*_Jenkinsfile.*',
                         '**/jenkins/*',
@@ -123,76 +135,42 @@ jacocoTestReport {
                         '**/utils/*'
                 ],
                 excludes: [
-                        '**/*\$_get_closure*',
-                        '**/*\$_*closure*'
+                        '**/*\$_get_closure*'
                 ]
-        )
+            )
     }
-    //     afterEvaluate {
-    //     /*
-    //      * There are 2 location where the ".class" files exist:
-    //      * 1) "$buildDir/jacoco/classpathdumps": This is where jacoco puts the class files which have been triggered by
-    //      *    the tests.
-    //      * 2) "$buildDir/classes/groovy/main": This is where gradle places all the class files during compilation
-    //      *
-    //      * It should be enough to just include the file tree from (1) above. However, this will result in not
-    //      * considering any of the files which has not been tested.
-    //      * In order to consider those as well, we add the class files from (2) as well. However, if we try to add the
-    //      * same class multiple times, jacoco will complain. Therefore, we need to add all the files from (1), and the
-    //      * files from (2) which are not in (1) already.
-    //      */
-    //     String jacocoClassesPath = "$buildDir/jacoco/classpathdumps"
-    //     String gradleClassesPath = "$buildDir/classes/groovy/main"
-    //     // The single "*" here indicates the "default" package which in our case is the "vars" dir
-    //     List includesList = [
-    //                     '**/*_Jenkinsfile.*',
-    //                     '**/jenkins/*',
-    //                     '**/gradlecheck/*',
-    //                     '**/utils/*'
-    //             ]
-    //     List excludesList = [
-    //                     '**/*\$_get_closure*',
-    //                     '**/*\$_*closure*'
-    //             ]
+}
 
-    //     List allTrees = [
-    //         fileTree(dir: jacocoClassesPath, includes: includesList, excludes: excludesList),
-    //         fileTree(dir: gradleClassesPath, includes: includesList, excludes: excludesList).filter { f ->
-    //             /*
-    //              * In this filter, we want to remove all the files which were already covered by jacoco in the first
-    //              * `fileTree` above. This filter is only executed after the tests have completed while jacoco is
-    //              * generating the reports. Therefore, we cannot find the files list earlier. Although here were are
-    //              * finding the files list multiple times (for each file `f`), this is still acceptable because number of
-    //              * files are limited anyway.
-    //              */
-    //             // This list will collect all the ".class" files from jacoco classes path folder
-    //             List fs = new File(jacocoClassesPath).listFiles().findAll { it.name.endsWith(".class") }
-    //             /*
-    //              * Next we need to keep only the file name (without path). Additionally, jacoco adds a session ID to the
-    //              * file name (e.g. something.class would look something like something.93153c79e479a123.class). What we
-    //              * are interested in here is only the "something.class" without the session ID.
-    //              * The `toString()` is also required otherwise the `.contains()` we do next will be comparing a G-String
-    //              * to a String and not match.
-    //              */
-    //             fs = fs.collect { "${it.name.split('\\.')[0]}.class".toString() }
-    //             // We only want to consider the current file `f` if its name does not already exist in `fs`.
-    //             boolean keepFile = !fs.contains(f.name)
-    //             /*
-    //              * XXX - it's enough to just return the value of `keepFile` without deletion but we do so to simplify
-    //              * the call to the jacoco plugin from Jenkins. If we don't do so, we'll need to do the filtering again
-    //              * from Jenkinsfile as well.
-    //              */
-    //             if (!keepFile) {
-    //                 f.delete()
-    //             }
-    //             return keepFile
-    //         },
-    //     ]
-    //     classDirectories.from = allTrees
-    // }
+task jacocoParseClassDumps {
+    doFirst {
+        cleanClassPathDumps(classPathDumpsDir)
+        parseClassPathDumps(classPathDumpsDir, parsedClassPathDumpsDir)
+    }
+}
 
-    reports {
-        xml.required = true
+task jacocoTestReports {
+    def classesDirs = []
+
+    classesDirs << "${sourceSets.main.groovy.outputDir}"
+
+    if (file(parsedClassPathDumpsDir).exists()) {
+        file(parsedClassPathDumpsDir).eachFile {
+            classesDirs << it.path
+        }
+    }
+
+    dependsOn classesDirs.collect { "runJacocoWith${file(it).name}" }
+
+    classesDirs.each {
+        def targetDir = file(it)
+        def targetDirName = targetDir.name
+        def targetDirPath = targetDir.path
+        def targetFileName = targetDirName + '.xml'
+        task "runJacocoWith${targetDirName}"(type: GradleBuild) {
+            buildFile = 'build.gradle'
+            tasks = ['jacocoTestReport']
+            startParameter.systemPropertiesArgs += [coverageFileName: targetFileName, coverageClassesDir: targetDirPath]
+        }
     }
 }
 
@@ -205,6 +183,95 @@ task updateVersion {
             fileset(dir: projectDir) {
                 include (name: "vars/**")
                 include (name: "tests/**")
+            }
+        }
+    }
+}
+
+// --------------------------------------------------
+// Helper functions
+
+/**
+ * Collects all the source file paths from all the source folders specified in the project configuration.
+ *
+ * @return A list of all the source file paths relative to the root package and excluding the
+ * extensions (i.e. [foo, mypackage/bar])
+ */
+def getAllSourceFilePaths() {
+    def sourceFilePaths = []
+    def baseDirs = sourceSets.main.groovy.srcDirs
+    baseDirs.each { File baseDir ->
+        fileTree(dir: baseDir).each { File file ->
+            sourceFilePaths << file.path.replace(baseDir.path + '/', '').replace('.groovy', '')
+        }
+    }
+
+    return sourceFilePaths
+}
+
+/**
+ * Cleans the class path dump directory by deleting class files that were not compiled from the source files (i.e. class
+ * files from external libraries, etc).
+ *
+ * @param classPathDumpsDir Path to the class dumps directory seen by the Jacoco agent.
+ */
+def cleanClassPathDumps(String classPathDumpsDir) {
+    def srcFilePaths = getAllSourceFilePaths()
+    fileTree(dir: classPathDumpsDir).each { File file ->
+        def filePath = file.path.replace(classPathDumpsDir + '/', '')
+        def cleanedFilePath = filePath.contains('$') ? filePath.tokenize('$')[0] : filePath.tokenize('.')[0]
+        if (!srcFilePaths.contains(cleanedFilePath) || file.path.contains('$')) {
+            file.delete()
+        }
+    }
+}
+
+/**
+ * Check whether the class is already duplicated in the specified directory.
+ *
+ * @param baseDir Path to the directory containing the classes to check.
+ * @param relativeFilePath Relative path of the class file to check for duplication.
+ *
+ * @return True if there is already a class file with the same class as the one we are checking, or False otherwise.
+ */
+def isClassDuplicatedInDir(String baseDir, String relativeFilePath) {
+    for (File file in fileTree(dir: baseDir)) {
+        def cleanRelativeFilePath = relativeFilePath.contains('$') ? relativeFilePath.tokenize('$')[0] : relativeFilePath.tokenize('.')[0]
+        if (file.path.contains("${baseDir}/${cleanRelativeFilePath}")) {
+            return true
+        }
+    }
+    return false
+}
+
+/**
+ * Parses the class dump directory seen by the Jacoco agent by copying duplicated file names to individual folders. If
+ * this is not done, then at the time of analysis it will throw 'Can't add different class with same name' error since
+ * the Jenkins unit testing framework dynamically creates different class files for the same class at runtime.
+ *
+ * @param classPathDumpsDir Path to the class files dump directory from the Jacoco agent.
+ * @param parsedClassPathDumpsDir Path to the base directory that will contain the sub-directories containing the parsed
+ * class files.
+ */
+def parseClassPathDumps(String classPathDumpsDir, String parsedClassPathDumpsDir) {
+    def classesBaseTree = fileTree(dir: classPathDumpsDir)
+    for (File srcFile in classesBaseTree) {
+        for (int i = 1 ; i <= classesBaseTree.size() ; i++) {
+            def targetDir = "${parsedClassPathDumpsDir}/${i}"
+            if (Files.notExists(Paths.get(targetDir))) {
+                Files.createDirectories(Paths.get(targetDir))
+            }
+
+            def relativeTargetFilePath = srcFile.path.replace(classPathDumpsDir + '/', '')
+            def targetFile = file("${targetDir}/${relativeTargetFilePath}")
+
+            if (!isClassDuplicatedInDir(targetDir, relativeTargetFilePath)) {
+                def targetParentPath = Paths.get(targetFile.parent)
+                if (Files.notExists(targetParentPath)) {
+                    Files.createDirectories(targetParentPath)
+                }
+                Files.copy(Paths.get(srcFile.path), Paths.get(targetFile.path))
+                break
             }
         }
     }

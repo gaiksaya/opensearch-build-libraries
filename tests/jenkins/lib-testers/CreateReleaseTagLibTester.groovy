@@ -11,6 +11,8 @@ import org.yaml.snakeyaml.Yaml
 
 import static org.hamcrest.CoreMatchers.notNullValue
 import static org.hamcrest.MatcherAssert.assertThat
+import jenkins.tests.LibFunctionTester
+
 
 
 class CreateReleaseTagLibTester extends LibFunctionTester {

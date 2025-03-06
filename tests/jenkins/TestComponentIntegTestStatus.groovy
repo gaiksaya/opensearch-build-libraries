@@ -7,11 +7,12 @@
  * compatible open source license.
  */
 
-package jenkins
+package jenkins.tests
 
 import org.junit.*
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import jenkins.ComponentIntegTestStatus
 
 class TestComponentIntegTestStatus {
 

@@ -9,6 +9,8 @@
 
 import static org.hamcrest.CoreMatchers.notNullValue
 import static org.hamcrest.MatcherAssert.assertThat
+import jenkins.tests.LibFunctionTester
+
 
 class GetCompareBenchmarkIdsLibTester extends LibFunctionTester {
     private String baselineClusterConfig

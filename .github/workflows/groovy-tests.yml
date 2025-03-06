@@ -8,15 +8,13 @@ jobs:
     strategy:
       matrix:
         os:
-          - windows-latest
           - ubuntu-latest
-          - macos-latest
     runs-on: ${{ matrix.os }}
     steps:
       - name: Setup Java
         uses: actions/setup-java@v1
         with:
-          java-version: 17
+          java-version: 11
       - uses: actions/checkout@v2
       - name: Run Tests
         run: |
@@ -25,4 +23,4 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./build/reports/jacoco/test/jacocoTestReport.xml
+          directory: ./build/reports/jacoco/xml

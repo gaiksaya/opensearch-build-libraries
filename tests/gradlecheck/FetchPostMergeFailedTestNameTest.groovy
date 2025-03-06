@@ -7,11 +7,12 @@
  * compatible open source license.
  */
 
-package gradlecheck
+package gradlecheck.tests
 
 import org.junit.*
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import gradlecheck.FetchPostMergeFailedTestName
 
 class FetchPostMergeFailedTestNameTest {
 

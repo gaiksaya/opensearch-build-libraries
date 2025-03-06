@@ -9,6 +9,8 @@
 import static org.hamcrest.CoreMatchers.notNullValue
 import static org.hamcrest.MatcherAssert.assertThat
 import static org.hamcrest.CoreMatchers.NullValue
+import jenkins.tests.LibFunctionTester
+
 
 class PublishToCratesLibTester extends LibFunctionTester {
 
