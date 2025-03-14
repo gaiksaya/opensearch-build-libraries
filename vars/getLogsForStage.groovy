@@ -21,6 +21,7 @@ import org.jenkinsci.plugins.workflow.graphanalysis.DepthFirstScanner
 import org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode
 import org.jenkinsci.plugins.workflow.job.WorkflowRun
 import java.util.stream.Collectors
+import com.cloudbees.groovy.cps.NonCPS
 
 @NonCPS
 def call(Map args = [:]) {

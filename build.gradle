@@ -45,7 +45,7 @@ configurations.all {
 sourceSets {
     main {
         groovy {
-            srcDirs = ['src/jenkins', 'src/gradlecheck', 'src/utils']
+            srcDirs = ['src/jenkins', 'src/gradlecheck', 'src/utils', 'vars']
         }
     }
 
