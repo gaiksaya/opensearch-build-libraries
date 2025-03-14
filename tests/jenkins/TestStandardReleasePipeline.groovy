@@ -27,17 +27,17 @@ class TestStandardReleasePipeline extends BuildPipelineTest {
 
     @Test
     void testStandardReleasePipeline() {
-        super.testPipeline('tests/jenkins/jobs/StandardReleasePipeline_JenkinsFile')
+        super.testPipeline('tests/jenkins/jobs/StandardReleasePipeline_Jenkinsfile')
     }
 
     @Test
     void testStandardReleasePipelineWithArgs() {
-        super.testPipeline('tests/jenkins/jobs/StandardReleasePipelineWithArgs_JenkinsFile')
+        super.testPipeline('tests/jenkins/jobs/StandardReleasePipelineWithArgs_Jenkinsfile')
     }
 
     @Test
     void 'check override values'() {
-        runScript("tests/jenkins/jobs/StandardReleasePipelineWithArgs_JenkinsFile")
+        runScript("tests/jenkins/jobs/StandardReleasePipelineWithArgs_Jenkinsfile")
         def echoCommand = getEchoCommands().findAll{
             command -> command.contains('agent')
         }
@@ -48,7 +48,7 @@ class TestStandardReleasePipeline extends BuildPipelineTest {
 
     @Test
     void 'check default values'(){
-        runScript("tests/jenkins/jobs/StandardReleasePipeline_JenkinsFile")
+        runScript("tests/jenkins/jobs/StandardReleasePipeline_Jenkinsfile")
         def echoCommand = getEchoCommands().findAll{
             command -> command.contains('agent')
         }

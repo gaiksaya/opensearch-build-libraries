@@ -27,7 +27,7 @@ class TestPublishToNpm extends BuildPipelineTest {
     @Test
     void testWithTarball() {
         this.registerLibTester(new PublishToNpmLibTester('artifact', '/tmp/workspace/example.tgz'))
-        super.testPipeline('tests/jenkins/jobs/PublishToNpmUsingTarball_JenkinsFile')
+        super.testPipeline('tests/jenkins/jobs/PublishToNpmUsingTarball_Jenkinsfile')
         assertThat(getShellCommands('npm'), hasItem(
             '\n            npm set registry \"https://registry.npmjs.org\"\n            npm set //registry.npmjs.org/:_authToken NPM_TOKEN\n            npm publish /tmp/workspace/example.tgz --dry-run && npm publish /tmp/workspace/example.tgz --access public --tag beta\n        '
         ))

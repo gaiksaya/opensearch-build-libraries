@@ -1,9 +1,9 @@
-   PublishToRubyGems_JenkinsFile.run()
-      PublishToRubyGems_JenkinsFile.pipeline(groovy.lang.Closure)
-         PublishToRubyGems_JenkinsFile.echo(Executing on agent [label:none])
-         PublishToRubyGems_JenkinsFile.stage(publishRubyGems, groovy.lang.Closure)
-            PublishToRubyGems_JenkinsFile.script(groovy.lang.Closure)
-               PublishToRubyGems_JenkinsFile.publishToRubyGems({apiKeyCredentialId=ruby-api-key})
+   PublishToRubyGems_Jenkinsfile.run()
+      PublishToRubyGems_Jenkinsfile.pipeline(groovy.lang.Closure)
+         PublishToRubyGems_Jenkinsfile.echo(Executing on agent [label:none])
+         PublishToRubyGems_Jenkinsfile.stage(publishRubyGems, groovy.lang.Closure)
+            PublishToRubyGems_Jenkinsfile.script(groovy.lang.Closure)
+               PublishToRubyGems_Jenkinsfile.publishToRubyGems({apiKeyCredentialId=ruby-api-key})
                   publishToRubyGems.sh(#!/bin/bash
         source ~/.rvm/scripts/rvm && rvm use 2.6.0 && ruby --version
         gem cert --add /tmp/workspace/certs/opensearch-rubygems.pem

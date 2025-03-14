@@ -178,7 +178,7 @@ class TestCheckRequestAssignReleaseOwners extends BuildPipelineTest {
     void testCheckAction() {
         addParam('ACTION', 'check')
         this.registerLibTester(new CheckReleaseOwnersLibTester(['tests/data/opensearch-1.3.0.yml'], 'check'))
-        super.testPipeline('tests/jenkins/jobs/CheckRequestAssignReleaseOwnerJenkinsFile')
+        super.testPipeline('tests/jenkins/jobs/CheckRequestAssignReleaseOwner_Jenkinsfile')
         assertThat(getCommands('echo', 'missing'), hasItem("Components missing release owner: [OpenSearch]"))
     }
 
@@ -186,7 +186,7 @@ class TestCheckRequestAssignReleaseOwners extends BuildPipelineTest {
     void testRequestAction() {
         addParam('ACTION', 'request')
         this.registerLibTester(new CheckReleaseOwnersLibTester(['tests/data/opensearch-1.3.0.yml'], 'request'))
-        runScript('tests/jenkins/jobs/CheckRequestAssignReleaseOwnerJenkinsFile')
+        runScript('tests/jenkins/jobs/CheckRequestAssignReleaseOwner_Jenkinsfile')
         assertThat(getCommands('sh', 'issue'), hasItem("{script=gh issue comment https://github.com/opensearch-project/opensearch/issues/123 --body-file /tmp/workspace/OpenSearch.md, returnStdout=true}"))
         def fileContent = getCommands('writeFile', 'release')[0]
         assertThat(fileContent, containsString("{file=/tmp/workspace/OpenSearch.md, text=Hi @foo, @bar, </br>"))
@@ -199,7 +199,7 @@ class TestCheckRequestAssignReleaseOwners extends BuildPipelineTest {
         addParam('ACTION', 'assign')
         Random.metaClass.nextInt = { int max -> 1 }
         this.registerLibTester(new CheckReleaseOwnersLibTester(['tests/data/opensearch-1.3.0.yml'], 'assign'))
-        runScript('tests/jenkins/jobs/CheckRequestAssignReleaseOwnerJenkinsFile')
+        runScript('tests/jenkins/jobs/CheckRequestAssignReleaseOwner_Jenkinsfile')
         assertThat(getCommands('sh', 'issue'), hasItems("{script=gh issue comment https://github.com/opensearch-project/opensearch/issues/123 --body-file /tmp/workspace/OpenSearch.md, returnStdout=true}", "{script=gh issue edit https://github.com/opensearch-project/opensearch/issues/123 --add-assignee bar, returnStdout=true}"))
         def fileContent = getCommands('writeFile', 'release')[0]
         assertThat(fileContent, containsString("{file=/tmp/workspace/OpenSearch.md, text=Hi @bar, </br>"))
@@ -211,7 +211,7 @@ class TestCheckRequestAssignReleaseOwners extends BuildPipelineTest {
     void testParameterCheck() {
         addParam('ACTION', 'asign')
         this.registerLibTester(new CheckReleaseOwnersLibTester(['tests/data/opensearch-1.3.0.yml'], 'asign'))
-        runScript('tests/jenkins/jobs/CheckRequestAssignReleaseOwnerJenkinsFile')
+        runScript('tests/jenkins/jobs/CheckRequestAssignReleaseOwner_Jenkinsfile')
         assertThat(getCommands('error', ''), hasItems("Invalid action 'asign'. Valid values: check, assign, request"))
     }
 
@@ -222,7 +222,7 @@ class TestCheckRequestAssignReleaseOwners extends BuildPipelineTest {
             return [stdout: "Wrong credentials", exitValue: 127]
         }
         this.registerLibTester(new CheckReleaseOwnersLibTester(['tests/data/opensearch-1.3.0.yml'], 'assign'))
-        runScript('tests/jenkins/jobs/CheckRequestAssignReleaseOwnerJenkinsFile')
+        runScript('tests/jenkins/jobs/CheckRequestAssignReleaseOwner_Jenkinsfile')
         assertThat(getCommands('error', ''), hasItem("Failed to assign release owner for OpenSearch: Script returned error code: 127"))
     }
 
@@ -233,7 +233,7 @@ class TestCheckRequestAssignReleaseOwners extends BuildPipelineTest {
             return [stdout: "Wrong credentials", exitValue: 127]
         }
         this.registerLibTester(new CheckReleaseOwnersLibTester(['tests/data/opensearch-1.3.0.yml'], 'request'))
-        runScript('tests/jenkins/jobs/CheckRequestAssignReleaseOwnerJenkinsFile')
+        runScript('tests/jenkins/jobs/CheckRequestAssignReleaseOwner_Jenkinsfile')
         assertThat(getCommands('error', ''), hasItem("Failed to request maintainers for OpenSearch: Script returned error code: 127"))
     }
 
@@ -277,7 +277,7 @@ class TestCheckRequestAssignReleaseOwners extends BuildPipelineTest {
             return [stdout: releaseOwnerResponseFoo, exitValue: 0]
         }
         this.registerLibTester(new CheckReleaseOwnersLibTester(['tests/data/opensearch-1.3.0.yml'], 'request'))
-        runScript('tests/jenkins/jobs/CheckRequestAssignReleaseOwnerJenkinsFile')
+        runScript('tests/jenkins/jobs/CheckRequestAssignReleaseOwner_Jenkinsfile')
         assertThat(getCommands('echo', 'missing'), not(hasItem("Components missing release owner: [OpenSearch]")))
         assertThat(getCommands('echo', 'components'), hasItem("All components have release owner assigned."))
     }

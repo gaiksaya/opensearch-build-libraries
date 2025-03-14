@@ -242,14 +242,14 @@ class TestAddRcDetailsComment extends BuildPipelineTest {
     @Test
     void testAddingComment() {
         this.registerLibTester(new AddRcDetailsCommentLibTester('2.19.0'))
-        super.testPipeline('tests/jenkins/jobs/AddRcDetailsComment.jenkinsFile')
+        super.testPipeline('tests/jenkins/jobs/AddRcDetailsComment_Jenkinsfile')
         assertThat(getCommands('sh', 'comment'), hasItem("{script=gh issue comment https://github.com/opensearch-project/opensearch-build/issues/5152 --body-file 'rc-details-comment-body.md', returnStdout=true}"))
     }
 
     @Test
     void testCommentContent() {
         this.registerLibTester(new AddRcDetailsCommentLibTester('2.19.0'))
-        runScript('tests/jenkins/jobs/AddRcDetailsComment.jenkinsFile')
+        runScript('tests/jenkins/jobs/AddRcDetailsComment_Jenkinsfile')
         def fileContent = getCommands('writeFile', 'OpenSearch')[0]
         assertThat(fileContent, containsString("{file=rc-details-comment-body.md, text=## See OpenSearch RC 5 and OpenSearch-Dashboards RC 5 details"))
         assertThat(fileContent, containsString("OpenSearch 10787 and OpenSearch-Dashboards 8260 is ready for your test."))

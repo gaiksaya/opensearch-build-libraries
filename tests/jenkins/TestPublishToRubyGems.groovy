@@ -22,7 +22,7 @@ class TestPublishToRubyGems extends BuildPipelineTest {
     void testPublishingRuby() {
         this.registerLibTester(new PublishToRubyGemsLibTester('ruby-api-key'))
         super.setUp()
-        super.testPipeline('tests/jenkins/jobs/PublishToRubyGems_JenkinsFile')
+        super.testPipeline('tests/jenkins/jobs/PublishToRubyGems_Jenkinsfile')
         def curlCommands = getCommands('sh', 'curl')
         def gemCommands = getCommands('sh', 'gem')
         assertThat(curlCommands, hasItem(
