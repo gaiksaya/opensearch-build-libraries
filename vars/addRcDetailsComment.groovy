@@ -78,35 +78,42 @@ void call(Map args = [:]) {
 
 def getDockerScanResult(String component, def distributionRcBuildNumber) {
     withCredentials([usernamePassword(credentialsId: 'jenkins-github-bot-token', passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USER')]) {
-    println('Getting docker scan results')
-    String buildJobName = ''
-    String JENKINS_BASE_URL = 'https://build.ci.opensearch.org'
-    String BLUE_OCEAN_URL = 'blue/rest/organizations/jenkins/pipelines'
-    if(component == 'OpenSearch') {
-        buildJobName = 'distribution-build-opensearch'
-    } else if(component == 'OpenSearch-Dashboards') {
-        buildJobName = 'distribution-build-opensearch-dashboards'
-    } else {
-        error("Invalid component name: ${component}. Valid values: OpenSearch, OpenSearch-Dashboards")
-    }
-    String dockerScanUrl = sh (
+        println('Getting docker scan results')
+        String buildJobName = ''
+        String JENKINS_BASE_URL = 'https://build.ci.opensearch.org'
+        String BLUE_OCEAN_URL = 'blue/rest/organizations/jenkins/pipelines'
+
+        if (component == 'OpenSearch') {
+            buildJobName = 'distribution-build-opensearch'
+        } else if (component == 'OpenSearch-Dashboards') {
+            buildJobName = 'distribution-build-opensearch-dashboards'
+        } else {
+            error("Invalid component name: ${component}. Valid values: OpenSearch, OpenSearch-Dashboards")
+        }
+
+        String dockerScanUrl = sh(
             script: "curl -s -XGET \"${JENKINS_BASE_URL}/${BLUE_OCEAN_URL}/${buildJobName}/runs/${distributionRcBuildNumber}/nodes/\" --user GITHUB_USER:GITHUB_TOKEN | jq '.[] | select(.actions[].description? | contains(\"docker-scan\")) | .actions[] | select(.description | contains(\"docker-scan\")) | ._links.self.href'",
             returnStdout: true
-    ).trim()
-    String artifactsUrl = sh(
+        ).trim()
+
+        String artifactsUrl = sh(
             script: "curl -s -XGET \"${JENKINS_BASE_URL}${dockerScanUrl}\" --user GITHUB_USER:GITHUB_TOKEN | jq -r '._links.artifacts.href'",
             returnStdout: true
-    ).trim()
-    String dockerTxtScanUrl = sh(
+        ).trim()
+
+        String dockerTxtScanUrl = sh(
             script: "curl -s -XGET \"${JENKINS_BASE_URL}${artifactsUrl}\" --user GITHUB_USER:GITHUB_TOKEN | jq -r '.[] | select(.name | endswith(\".txt\")) | .url'",
             returnStdout: true
-    ).trim()
-    String fullDockerTxtScanUrl = "${JENKINS_BASE_URL}${dockerTxtScanUrl}"
-    // Do not trim as it messes the text table.
-    String dockerScanResult = sh(
+        ).trim()
+
+        String fullDockerTxtScanUrl = "${JENKINS_BASE_URL}${dockerTxtScanUrl}"
+
+        // Do not trim as it messes the text table.
+        String dockerScanResult = sh(
             script: "curl -s -XGET \"${fullDockerTxtScanUrl}\" --user GITHUB_USER:GITHUB_TOKEN",
             returnStdout: true
-    )
-    return [dockerScanUrl: fullDockerTxtScanUrl, dockerScanResult: dockerScanResult]
-        }
+        )
+
+        return [dockerScanUrl: fullDockerTxtScanUrl, dockerScanResult: dockerScanResult]
+    }
 }
