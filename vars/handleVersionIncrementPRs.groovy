@@ -29,7 +29,44 @@ void call(Map args = [:]) {
         withAWS(role: 'OpenSearchJenkinsAccessRole', roleAccount: "${METRICS_HOST_ACCOUNT}", duration: 900, roleSessionName: 'jenkins-session') {
             def releaseMetrics = new ReleaseMetricsData(env.METRICS_HOST_URL, env.AWS_ACCESS_KEY_ID, env.AWS_SECRET_ACCESS_KEY, env.AWS_SESSION_TOKEN, version, 'github_pulls', this)
             def pullRequestUrls = releaseMetrics.getVersionIncrementPrsUrls()
-            echo pullRequestUrls.toString()
         }
+    }
+
+
+}
+
+/**
+ * Merges the pull requests if all checks have passed or Enables auto merge on pull requests for merging it in future.
+ * @param prUrl: Full https URL of the Pull Request
+ */
+private void enableAutoMerge(String prUrl) {
+    try {
+        withCredentials([usernamePassword(credentialsId: 'jenkins-github-bot-token', passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USER')]) {
+            sh(
+                    script: "gh pr merge ${prUrl} --auto -s",
+                    returnStdout: true
+            )
+        }
+    } catch (Exception ex) {
+        println("Unable to enable auto merge on ${prUrl}!", ex.getMessage())
+    }
+}
+
+private void reRunChecks(String prUrl) {
+    try {
+        withCredentials([usernamePassword(credentialsId: 'jenkins-github-bot-token', passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USER')]) {
+            def failedRuns = sh(
+                    script: "gh pr checks ${prUrl} --json link,state -q '.[] | select(.state==\"FAILURE\") | .link'",
+                    returnStdout: true
+            ).trim
+            failedRuns.split('\n').each { run ->
+                println "Failed run URL: ${run}"
+//                // You can extract run ID if needed using regex
+//                def runId = run.find(/runs\/(\d+)/) { match, id -> id }
+//                println "Run ID: ${runId}"
+            }
+        }
+    } catch (Exception ex) {
+        echo("Unable to re-run checks for ${prUrl}")
     }
 }
