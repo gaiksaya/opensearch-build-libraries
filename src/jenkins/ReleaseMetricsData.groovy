@@ -111,6 +111,50 @@ class ReleaseMetricsData {
         return query.replace('"', '\\"')
     }
 
+    String getVersionIncrementPrsQuery() {
+        def queryMap = [
+                size   : 100,
+                _source: "html_url",
+                query  : [
+                        bool: [
+                                must: [
+                                        [
+                                                match_phrase: [
+                                                        merged: "false"
+                                                ]
+                                        ],
+                                        [
+                                                match_phrase: [
+                                                        "state.keyword": "open"
+                                                ]
+                                        ],
+                                        [
+                                                match_phrase: [
+                                                        "pull_labels.keyword": "v${this.version}"
+                                                ]
+                                        ],
+                                        [
+                                                prefix: [
+                                                        "title.keyword": [
+                                                                value: "[AUTO] Increment version to"
+                                                        ]
+                                                ]
+                                        ]
+                                ]
+                        ]
+                ],
+                sort   : [
+                        [
+                                created_at: [
+                                        order: "desc"
+                                ]
+                        ]
+                ]
+        ]
+        String query = JsonOutput.toJson(queryMap)
+        return query.replace('"', '\\"')
+    }
+
 ArrayList getReleaseOwners(String component) {
         try {
                 def jsonResponse = this.openSearchMetricsQuery.fetchMetrics(getReleaseOwnerIssueRepoQuery(component))
@@ -131,6 +175,17 @@ String getReleaseIssue(String repository, String changedMatchPhraseKey="reposito
                 this.script.println("Error fetching release issue: ${e.message}")
                 return null
         }
+}
+
+def getVersionIncrementPrsUrls() {
+    try {
+        def jsonResponse = this.openSearchMetricsQuery.fetchMetrics(getVersionIncrementPrsQuery())
+        def prs = jsonResponse.hits.hits.collect { it._source.html_url }
+        return prs
+    } catch (Exception e) {
+        this.script.println("Error fetching version increment PRs: ${e.message}")
+        return null
+    }
 }
 
 def getReleaseIssueStatus(String component) {
