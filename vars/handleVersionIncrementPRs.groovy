@@ -62,7 +62,7 @@ private void reRunChecks(String prUrl) {
             def failedRuns = sh(
                     script: "gh pr checks ${prUrl} --json link,state -q '.[] | select(.state==\"FAILURE\") | .link'",
                     returnStdout: true
-            ).trim
+            )
             echo failedRuns
             failedRuns.split('\n').each { run ->
                 println "Failed run URL: ${run}"
