@@ -66,9 +66,8 @@ private void reRunChecks(String prUrl) {
             echo failedRuns
             failedRuns.split('\n').each { run ->
                 println "Failed run URL: ${run}"
-//                // You can extract run ID if needed using regex
-//                def runId = run.find(/runs\/(\d+)/) { match, id -> id }
-//                println "Run ID: ${runId}"
+                def runId = run.tokenize('\\')[-1]
+                println "Run ID: ${runId}"
             }
         }
     } catch (Exception ex) {
