@@ -71,6 +71,11 @@ private void reRunChecks(String prUrl) {
                 def repoName = "${parts[3]}/${parts[4]}"
                 println "Run ID: ${runId}"
                 println "Repo name: ${repoName}"
+                println("Rerunning failed tests")
+                sh(
+                        script: "gh run rerun --repo ${repoName} -j ${runId}",
+                        returnStdout: true
+                )
             }
         }
     } catch (Exception ex) {
