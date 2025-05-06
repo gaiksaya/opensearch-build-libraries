@@ -70,6 +70,7 @@ private void reRunChecks(String prUrl) {
                 def runId = parts[-1]
                 def repoName = "${parts[3]}/${parts[4]}"
                 println "Run ID: ${runId}"
+                println "Repo name: ${repoName}"
             }
         }
     } catch (Exception ex) {
