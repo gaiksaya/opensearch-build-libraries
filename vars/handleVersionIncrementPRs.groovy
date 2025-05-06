@@ -29,6 +29,7 @@ void call(Map args = [:]) {
         withAWS(role: 'OpenSearchJenkinsAccessRole', roleAccount: "${METRICS_HOST_ACCOUNT}", duration: 900, roleSessionName: 'jenkins-session') {
             def releaseMetrics = new ReleaseMetricsData(env.METRICS_HOST_URL, env.AWS_ACCESS_KEY_ID, env.AWS_SECRET_ACCESS_KEY, env.AWS_SESSION_TOKEN, version, 'github_pulls', this)
             def pullRequestUrls = releaseMetrics.getVersionIncrementPrsUrls()
+            sh('gh --version')
             pullRequestUrls.each { pr ->
                 reRunChecks(pr)
             }
