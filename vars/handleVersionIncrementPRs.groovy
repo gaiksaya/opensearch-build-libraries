@@ -66,7 +66,9 @@ private void reRunChecks(String prUrl) {
             echo failedRuns
             failedRuns.split('\n').each { run ->
                 println "Failed run URL: ${run}"
-                def runId = run.split('/')[-1]
+                def parts =  run.split('/')
+                def runId = parts[-1]
+                def repoName = "${parts[3]}/${parts[4]}"
                 println "Run ID: ${runId}"
             }
         }
