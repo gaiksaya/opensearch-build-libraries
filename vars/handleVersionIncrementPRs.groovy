@@ -72,6 +72,6 @@ private void reRunChecks(String prUrl) {
             }
         }
     } catch (Exception ex) {
-        echo("Unable to re-run checks for ${prUrl}")
+        echo("Unable to re-run checks for ${prUrl}", ex.getMessage())
     }
 }
