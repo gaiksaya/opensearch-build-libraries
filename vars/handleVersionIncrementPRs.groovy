@@ -66,7 +66,7 @@ private void reRunChecks(String prUrl) {
             echo failedRuns
             failedRuns.split('\n').each { run ->
                 println "Failed run URL: ${run}"
-                def runId = run.tokenize('\\')[-1]
+                def runId = run.split('/')[-1]
                 println "Run ID: ${runId}"
             }
         }
