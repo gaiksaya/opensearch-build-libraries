@@ -37,6 +37,7 @@ void call(Map args = [:]) {
     }
 
     // Process core and common dependencies version increment PRs
+    println("Processing core and common dependencies")
     coreAndCommonDependencies.each { component ->
         def name = component.name
         if (!processedComponents.contains(name) && pendingComponentRepoPRs.containsKey(name) && !dependencyGraph.containsKey(name)) {
@@ -49,6 +50,7 @@ void call(Map args = [:]) {
     }
 
     // Process independent components version increment PRs
+    println("Processing independent components")
     components.each { component ->
         def name = component.name
         if (!processedComponents.contains(name) && pendingComponentRepoPRs.containsKey(name) && !dependencyGraph.containsKey(name)) {
@@ -61,6 +63,7 @@ void call(Map args = [:]) {
     }
 
     // Process dependent components
+    println("Processing dependent components")
     dependencyGraph.keySet().each { component ->
         def name = component.name
         if (!processedComponents.contains(name) && !mergedComponentRepoPRs.containsKey(name)) {
