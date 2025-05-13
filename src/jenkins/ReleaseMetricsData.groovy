@@ -111,21 +111,28 @@ class ReleaseMetricsData {
         return query.replace('"', '\\"')
     }
 
-    String getVersionIncrementPrsQuery() {
+    String getVersionIncrementPrsQuery(String merged) {
+        def state = "closed"
+        if (merged == "false") {
+            state = "open"
+        }
         def queryMap = [
                 size   : 100,
-                _source: "html_url",
+                _source: [
+                        "html_url",
+                        "repository"
+                ],
                 query  : [
                         bool: [
                                 must: [
                                         [
                                                 match_phrase: [
-                                                        merged: "false"
+                                                        merged: "${merged}"
                                                 ]
                                         ],
                                         [
                                                 match_phrase: [
-                                                        "state.keyword": "open"
+                                                        "state.keyword": "${state}"
                                                 ]
                                         ],
                                         [
@@ -177,11 +184,17 @@ String getReleaseIssue(String repository, String changedMatchPhraseKey="reposito
         }
 }
 
-def getVersionIncrementPrsUrls() {
+def getVersionIncrementPRs(String merged) {
     try {
-        def jsonResponse = this.openSearchMetricsQuery.fetchMetrics(getVersionIncrementPrsQuery())
-        def prs = jsonResponse.hits.hits.collect { it._source.html_url }
-        return prs
+        def jsonResponse = this.openSearchMetricsQuery.fetchMetrics(getVersionIncrementPrsQuery(merged))
+        def repoPrMapping = [:]
+
+        jsonResponse.hits.hits.each { hit ->
+            def repository = hit._source.repository
+            def htmlUrl = hit._source.html_url
+            repoPrMapping[repository] = htmlUrl
+        }
+        return repoPrMapping
     } catch (Exception e) {
         this.script.println("Error fetching version increment PRs: ${e.message}")
         return null

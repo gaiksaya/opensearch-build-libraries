@@ -67,11 +67,13 @@ class InputManifest {
         String name
         String ref
         String repository
+        ArrayList<String> depends_on
 
         Component(Map data) {
             this.name = data.name
             this.ref = data.ref
             this.repository = data.repository
+            this.depends_on = data.depends_on ?: []
         }
 
     }
@@ -102,6 +104,28 @@ class InputManifest {
 
     public String getRepo(String name) {
         return this.components.get(name).repository
+    }
+
+    public ArrayList<Component> getCommonDependencies() {
+        def dependencyCount = [:]
+        this.components.each { _, component ->
+            component.depends_on.each { dep ->
+                dependencyCount[dep] = (dependencyCount[dep] ?: 0) + 1
+            }
+        }
+        // Filter dependencies that are used by more than two components
+        def commonDeps = dependencyCount.findAll { it.value > 2 }.keySet()
+        // Adds cores to the common dependencies
+        commonDeps.add(this.build.getFilename())
+        return commonDeps
+    }
+
+    public Map<Component, ArrayList<Component>> buildDependencyGraph() {
+        def graph = [:]
+        this.components.each { name, component ->
+            graph[name] = component.depends_on ? new ArrayList<String>(component.depends_on) : []
+        }
+        return graph
     }
 
 }
