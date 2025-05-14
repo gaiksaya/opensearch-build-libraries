@@ -49,6 +49,7 @@ void call(Map args = [:]) {
             enableAutoMerge(prUrl)
             processedComponents.add(name)
         }
+        println("Processed ${name}")
     }
 
     // Process independent components version increment PRs
