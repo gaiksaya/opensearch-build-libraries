@@ -117,7 +117,11 @@ class InputManifest {
         def commonDeps = dependencyCount.findAll { it.value > 2 }.keySet()
         // Adds cores to the common dependencies
         commonDeps.add(this.build.getFilename())
-        return commonDeps
+
+        // Convert the Set of dependency names to ArrayList<Component>
+        return commonDeps.collect { depName ->
+            this.components[depName]
+        } as ArrayList<Component>
     }
 
     public Map<Component, ArrayList<Component>> buildDependencyGraph() {
