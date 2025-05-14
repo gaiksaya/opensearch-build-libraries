@@ -17,11 +17,11 @@ import jenkins.ReleaseMetricsData
 
 void call(Map args = [:]) {
     def lib = library(identifier: 'jenkins@main', retriever: legacySCM(scm))
-    def inputManifest = lib.jenkins.InputManifest.new(readYaml(file: args.inputManifest))
+    def inputManifest = readYaml(file: args.inputManifest)
     def version = inputManifest.build.version
     def components = inputManifest.components
-    def coreAndCommonDependencies = inputManifest.getCommonDependencies()
-    def dependencyGraph = inputManifest.buildDependencyGraph()
+    def coreAndCommonDependencies = getCommonDependencies(components)
+    def dependencyGraph = buildDependencyGraph(components)
     def mergedComponentRepoPRs = [:]
     def pendingComponentRepoPRs = [:]
     Set processedComponents = []
@@ -132,4 +132,29 @@ private void reRunFailedChecks(String prUrl) {
     } catch (Exception ex) {
         echo("Unable to process checks for ${prUrl}", ex.getMessage())
     }
+}
+
+
+private def getCommonDependencies(def components) {
+    def dependencyCount = [:]
+    components.each { component ->
+        if (component.containsKey('depends_on')) {
+            component.depends_on.each { dep ->
+                dependencyCount[dep] = (dependencyCount[dep] ?: 0) + 1
+            }
+        }
+    }
+    return dependencyCount.findAll { it.value > 2 }.keySet()
+}
+
+private def buildDependencyGraph(def components) {
+    def graph = [:]
+    components.each { component ->
+        def name = component.name
+        if (component.containsKey('depends_on')) {
+            graph[name] = component.depends_on
+        }
+    }
+    println "Dependency graph: ${graph}"
+    return graph
 }
