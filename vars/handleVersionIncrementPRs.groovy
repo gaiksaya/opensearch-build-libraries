@@ -38,7 +38,8 @@ void call(Map args = [:]) {
     }
 
     // Process core and common dependencies version increment PRs
-    println("Processing core and common dependencies")
+    println("Processing core and common dependencies, ${coreAndCommonDependencies}")
+
     coreAndCommonDependencies.each { component ->
         def name = component.name
         if (!processedComponents.contains(name) && pendingComponentRepoPRs.containsKey(name) && !dependencyGraph.containsKey(name)) {
