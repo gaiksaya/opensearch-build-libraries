@@ -154,9 +154,8 @@ private def getCommonDependencies(def components) {
 private def buildDependencyGraph(def components) {
     def graph = [:]
     components.each { component ->
-        def name = component.name
         if (component.containsKey('depends_on')) {
-            graph[name] = components.findAll { comp ->
+            graph[component] = components.findAll { comp ->
                 component.depends_on.contains(comp.name)
             }
         }
