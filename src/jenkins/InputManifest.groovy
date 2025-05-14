@@ -115,8 +115,6 @@ class InputManifest {
         }
         // Filter dependencies that are used by more than two components
         def commonDeps = dependencyCount.findAll { it.value > 2 }.keySet()
-        // Adds cores to the common dependencies
-        commonDeps.add(this.build.getFilename())
 
         // Convert the Set of dependency names to ArrayList<Component>
         return commonDeps.collect { depName ->
