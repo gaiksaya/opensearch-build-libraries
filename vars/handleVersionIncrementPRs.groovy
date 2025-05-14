@@ -22,7 +22,6 @@ void call(Map args = [:]) {
     def components = inputManifest.components
     def coreAndCommonDependencies = getCommonDependencies(components)
     def dependencyGraph = buildDependencyGraph(components)
-    println("dependencyGraph ${dependencyGraph}")
     def mergedComponentRepoPRs = [:]
     def pendingComponentRepoPRs = [:]
     Set processedComponents = []
@@ -157,7 +156,9 @@ private def buildDependencyGraph(def components) {
     components.each { component ->
         def name = component.name
         if (component.containsKey('depends_on')) {
-            graph[name] = component.depends_on
+            graph[name] = components.findAll { comp ->
+                component.depends_on.contains(comp.name)
+            }
         }
     }
     println "Dependency graph: ${graph}"
