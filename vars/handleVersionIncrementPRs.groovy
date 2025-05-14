@@ -72,7 +72,7 @@ void call(Map args = [:]) {
     println("Processing dependent components")
     dependencyGraph.keySet().each { component ->
         def name = component.name
-        if (!processedComponents.contains(name) && !mergedComponentRepoPRs.containsKey(name)) {
+        if (!processedComponents.contains(name) && pendingComponentRepoPRs.containsKey(name)) {
             def dependencies = dependencyGraph[component]
             def unprocessedDeps = dependencies.findAll { !processedComponents.contains(it) && !mergedComponentRepoPRs.containsKey(it)}
             if (!unprocessedDeps.isEmpty()) {
@@ -84,6 +84,8 @@ void call(Map args = [:]) {
                 enableAutoMerge(prUrl)
                 processedComponents.add(name)
             }
+        } else {
+            println("${component.name} already processed.")
         }
     }
 }
