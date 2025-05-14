@@ -55,6 +55,7 @@ void call(Map args = [:]) {
     // Process independent components version increment PRs
     println("Processing independent components")
     components.each { component ->
+        println("Component is: ${component}")
         def name = component.name
         if (!processedComponents.contains(name) && pendingComponentRepoPRs.containsKey(name) && !dependencyGraph.containsKey(name)) {
             def repo = component.repository.split('/')[-1].replace('.git', '')
