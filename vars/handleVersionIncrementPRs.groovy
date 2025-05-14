@@ -33,6 +33,7 @@ void call(Map args = [:]) {
             def releaseMetrics = new ReleaseMetricsData(env.METRICS_HOST_URL, env.AWS_ACCESS_KEY_ID, env.AWS_SECRET_ACCESS_KEY, env.AWS_SESSION_TOKEN, version, 'github_pulls', this)
             mergedComponentRepoPRs = releaseMetrics.getVersionIncrementPRs("true")
             pendingComponentRepoPRs = releaseMetrics.getVersionIncrementPRs("false")
+            println("${mergedComponentRepoPRs} and ${pendingComponentRepoPRs}")
         }
     }
 

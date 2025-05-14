@@ -122,6 +122,7 @@ class InputManifest {
         return commonDeps.collect { depName ->
             this.components[depName]
         } as ArrayList<Component>
+        println("Common dependencies: ${commonDeps}")
     }
 
     public Map<Component, ArrayList<Component>> buildDependencyGraph() {
