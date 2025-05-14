@@ -144,8 +144,11 @@ private def getCommonDependencies(def components) {
             }
         }
     }
-    println("DependencyCount ${dependencyCount}")
-    return dependencyCount.findAll { it.value > 2 }.keySet()
+    def common = dependencyCount.findAll { it.value > 2 }.keySet()
+    println("common: ${common}")
+    return components.findAll { component ->
+        common.contains(component.name)
+    }
 }
 
 private def buildDependencyGraph(def components) {
