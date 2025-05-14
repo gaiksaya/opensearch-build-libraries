@@ -16,7 +16,7 @@ import jenkins.ReleaseMetricsData
  */
 
 void call(Map args = [:]) {
-    def lib = library(identifier: 'jenkins@main', retriever: legacySCM(scm))
+//    def lib = library(identifier: 'jenkins@main', retriever: legacySCM(scm))
     def inputManifest = readYaml(file: args.inputManifest)
     def version = inputManifest.build.version
     def components = inputManifest.components
@@ -144,6 +144,7 @@ private def getCommonDependencies(def components) {
             }
         }
     }
+    println("DependencyCount ${dependencyCount}")
     return dependencyCount.findAll { it.value > 2 }.keySet()
 }
 
