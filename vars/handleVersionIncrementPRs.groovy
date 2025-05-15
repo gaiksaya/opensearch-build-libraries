@@ -45,10 +45,7 @@ void call(Map args = [:]) {
     coreAndCommonDependencies.each { component ->
         def name = component.name
         if (!processedComponents.contains(name) && pendingComponentRepoPRs.containsKey(name) && !dependencyGraph.containsKey(name)) {
-            def repo = component.repository.split('/')[-1].replace('.git', '')
-            def prUrl = pendingComponentRepoPRs[repo]
-            reRunFailedChecks(prUrl)
-            enableAutoMerge(prUrl)
+            processComponent(component, pendingComponentRepoPRs)
             processedComponents.add(name)
         }
         println("Processed ${name}")
@@ -59,10 +56,7 @@ void call(Map args = [:]) {
     components.each { component ->
         def name = component.name
         if (!processedComponents.contains(name) && pendingComponentRepoPRs.containsKey(name) && !dependencyGraph.containsKey(name)) {
-            def repo = component.repository.split('/')[-1].replace('.git', '')
-            def prUrl = pendingComponentRepoPRs[repo]
-            reRunFailedChecks(prUrl)
-            enableAutoMerge(prUrl)
+            processComponent(component, pendingComponentRepoPRs)
             processedComponents.add(name)
             println("Processed ${name}")
         }
@@ -79,10 +73,7 @@ void call(Map args = [:]) {
             if (!unprocessedDeps.isEmpty()) {
                 echo "${component.name} depends on ${dependencies} which are yet to be processed. Skipping!"
             } else {
-                def repo = component.repository.split('/')[-1].replace('.git', '')
-                def prUrl = pendingComponentRepoPRs[repo]
-                reRunFailedChecks(prUrl)
-                enableAutoMerge(prUrl)
+                processComponent(component, pendingComponentRepoPRs)
                 processedComponents.add(name)
             }
         } else {
@@ -104,7 +95,7 @@ private void enableAutoMerge(String prUrl) {
             )
         }
     } catch (Exception ex) {
-        println("Unable to enable auto merge on ${prUrl}!", ex.getMessage())
+        echo("Unable to enable auto merge on ${prUrl}!", ex.getMessage())
     }
 }
 
@@ -167,4 +158,11 @@ private def buildDependencyGraph(def components) {
     }
     println "Dependency graph: ${graph}"
     return graph
+}
+
+private def processComponent(def component, def pendingComponentRepoPRs) {
+    def repo = component.repository.split('/')[-1].replace('.git', '')
+    def prUrl = pendingComponentRepoPRs[repo]
+    reRunFailedChecks(prUrl)
+    enableAutoMerge(prUrl)
 }
