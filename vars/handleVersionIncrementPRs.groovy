@@ -71,12 +71,13 @@ void call(Map args = [:]) {
     // Process dependent components
     println("Processing dependent components")
     dependencyGraph.keySet().each { component ->
+        println("Processing ${component.name}")
         def name = component.name
         if (!processedComponents.contains(name) && pendingComponentRepoPRs.containsKey(name)) {
             def dependencies = dependencyGraph[component]
-            def unprocessedDeps = dependencies.findAll { !processedComponents.contains(it) && !mergedComponentRepoPRs.containsKey(it)}
+            def unprocessedDeps = dependencies.findAll { !processedComponents.contains(it.name) && !mergedComponentRepoPRs.containsKey(it.name)}
             if (!unprocessedDeps.isEmpty()) {
-                echo "${component} depends on ${dependencies} which are yet to be processed. Skipping!"
+                echo "${component.name} depends on ${dependencies} which are yet to be processed. Skipping!"
             } else {
                 def repo = component.repository.split('/')[-1].replace('.git', '')
                 def prUrl = pendingComponentRepoPRs[repo]
