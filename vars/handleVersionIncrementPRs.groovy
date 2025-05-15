@@ -16,7 +16,6 @@ import jenkins.ReleaseMetricsData
  */
 
 void call(Map args = [:]) {
-//    def lib = library(identifier: 'jenkins@main', retriever: legacySCM(scm))
     def inputManifest = readYaml(file: args.inputManifest)
     def version = inputManifest.build.version
     def components = inputManifest.components
@@ -41,7 +40,6 @@ void call(Map args = [:]) {
 
     // Process core and common dependencies version increment PRs
     println("Processing core and common dependencies")
-
     coreAndCommonDependencies.each { component ->
         def name = component.name
         if (!processedComponents.contains(name) && pendingComponentRepoPRs.containsKey(name) && !dependencyGraph.containsKey(name)) {
@@ -69,7 +67,9 @@ void call(Map args = [:]) {
         def name = component.name
         if (!processedComponents.contains(name) && pendingComponentRepoPRs.containsKey(name)) {
             def dependencies = dependencyGraph[component]
-            def unprocessedDeps = dependencies.findAll { !processedComponents.contains(it.name) && !mergedComponentRepoPRs.containsKey(it.name)}
+            def unprocessedDeps = dependencies.findAll {
+                !processedComponents.contains(it.name) && !mergedComponentRepoPRs.containsKey(it.name)
+            }
             if (!unprocessedDeps.isEmpty()) {
                 echo "${component.name} depends on ${dependencies} which are yet to be processed. Skipping!"
             } else {
@@ -141,10 +141,17 @@ private def getCommonDependencies(def components) {
         }
     }
     def common = dependencyCount.findAll { it.value > 2 }.keySet()
-    println("common: ${common}")
-    return components.findAll { component ->
+    def commonDep = components.findAll { component ->
         common.contains(component.name)
     }
+    // Add OpenSearch and OpenSearch-Dashboards
+    commonDep.addAll(components.findAll { component ->
+        component.name == 'OpenSearch'
+        // Commenting until https://github.com/opensearch-project/OpenSearch-Dashboards/issues/7162 gets resolved.
+//                || component.name == 'OpenSearch-Dashboards'
+    })
+    println("common: ${commonDep}")
+    return commonDep
 }
 
 private def buildDependencyGraph(def components) {
