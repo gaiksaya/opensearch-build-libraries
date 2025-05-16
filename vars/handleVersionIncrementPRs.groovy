@@ -50,7 +50,7 @@ void call(Map args = [:]) {
             processComponent(component, pendingComponentRepoPRs[repo])
             processedRepositories.add(repo)
         }
-        println("Processed ${name}")
+        println("Processed ${repo}")
     }
 
     // Process independent components version increment PRs
@@ -174,6 +174,7 @@ private def buildDependencyGraph(def components) {
 
 private def processComponent(def component, def prUrl) {
     def repo = getFormattedRepoName(component.repository)
+    println("Processing ${repo}")
     reRunFailedChecks(prUrl)
     enableAutoMerge(prUrl)
 }
