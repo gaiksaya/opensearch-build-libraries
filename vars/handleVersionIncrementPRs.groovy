@@ -23,7 +23,7 @@ void call(Map args = [:]) {
     def dependencyGraph = buildDependencyGraph(components)
     def mergedComponentRepoPRs = [:]
     def pendingComponentRepoPRs = [:]
-    Set processedComponents = []
+    Set processedRepositories = []
 
     withCredentials([
             string(credentialsId: 'jenkins-health-metrics-account-number', variable: 'METRICS_HOST_ACCOUNT'),
@@ -32,19 +32,23 @@ void call(Map args = [:]) {
             def releaseMetrics = new ReleaseMetricsData(env.METRICS_HOST_URL, env.AWS_ACCESS_KEY_ID, env.AWS_SECRET_ACCESS_KEY, env.AWS_SESSION_TOKEN, version, 'github_pulls', this)
             mergedComponentRepoPRs = releaseMetrics.getVersionIncrementPRs("true")
             pendingComponentRepoPRs = releaseMetrics.getVersionIncrementPRs("false")
-            println("mergedComponentRepoPRs: ${mergedComponentRepoPRs}")
-            println("pendingComponentRepoPRs: ${pendingComponentRepoPRs}")
+//            println("mergedComponentRepoPRs: ${mergedComponentRepoPRs}")
+//            println("pendingComponentRepoPRs: ${pendingComponentRepoPRs}")
 
         }
     }
 
+    // Consider all merged pull requests as processed.
+    println("Adding merged PRs into processed Repo array")
+    processedRepositories.addAll(mergedComponentRepoPRs.keySet())
+
     // Process core and common dependencies version increment PRs
     println("Processing core and common dependencies")
     coreAndCommonDependencies.each { component ->
-        def name = component.name
-        if (!processedComponents.contains(name) && pendingComponentRepoPRs.containsKey(name) && !dependencyGraph.containsKey(name)) {
-            processComponent(component, pendingComponentRepoPRs)
-            processedComponents.add(name)
+        def repo = getFormattedRepoName(component.repository)
+        if (!processedRepositories.contains(repo) && pendingComponentRepoPRs.containsKey(repo) && !dependencyGraph.containsKey(component.name)) {
+            processComponent(component, pendingComponentRepoPRs[repo])
+            processedRepositories.add(repo)
         }
         println("Processed ${name}")
     }
@@ -52,11 +56,11 @@ void call(Map args = [:]) {
     // Process independent components version increment PRs
     println("Processing independent components")
     components.each { component ->
-        def name = component.name
-        if (!processedComponents.contains(name) && pendingComponentRepoPRs.containsKey(name) && !dependencyGraph.containsKey(name)) {
-            processComponent(component, pendingComponentRepoPRs)
-            processedComponents.add(name)
-            println("Processed ${name}")
+        def repo = getFormattedRepoName(component.repository)
+        if (!processedRepositories.contains(repo) && pendingComponentRepoPRs.containsKey(repo) && !dependencyGraph.containsKey(component.name)) {
+            processComponent(component, pendingComponentRepoPRs[repo])
+            processedRepositories.add(repo)
+            println("Processed ${repo}")
         }
     }
 
@@ -65,16 +69,17 @@ void call(Map args = [:]) {
     dependencyGraph.keySet().each { component ->
         println("Processing ${component.name}")
         def name = component.name
-        if (!processedComponents.contains(name) && pendingComponentRepoPRs.containsKey(name)) {
+        def repo = getFormattedRepoName(component.repository)
+        if (!processedRepositories.contains(repo) && pendingComponentRepoPRs.containsKey(repo)) {
             def dependencies = dependencyGraph[component]
             def unprocessedDeps = dependencies.findAll {
-                !processedComponents.contains(it.name) && !mergedComponentRepoPRs.containsKey(it.name)
+                !processedRepositories.contains(getFormattedRepoName(it.repository)) && pendingComponentRepoPRs.containsKey(getFormattedRepoName(it.repository))
             }
             if (!unprocessedDeps.isEmpty()) {
                 echo "${component.name} depends on ${dependencies} which are yet to be processed. Skipping!"
             } else {
-                processComponent(component, pendingComponentRepoPRs)
-                processedComponents.add(name)
+                processComponent(component, pendingComponentRepoPRs[repo])
+                processedRepositories.add(repo)
             }
         } else {
             println("${component.name} already processed.")
@@ -95,7 +100,7 @@ private void enableAutoMerge(String prUrl) {
             )
         }
     } catch (Exception ex) {
-        echo("Unable to enable auto merge on ${prUrl}!", ex.getMessage())
+        echo("Unable to enable auto merge on ${prUrl}!,${ex.getMessage()}")
     }
 }
 
@@ -126,7 +131,7 @@ private void reRunFailedChecks(String prUrl) {
             }
         }
     } catch (Exception ex) {
-        echo("Unable to process checks for ${prUrl}", ex.getMessage())
+        echo("Unable to process checks for ${prUrl}, ${ex.getMessage()}")
     }
 }
 
@@ -167,9 +172,12 @@ private def buildDependencyGraph(def components) {
     return graph
 }
 
-private def processComponent(def component, def pendingComponentRepoPRs) {
-    def repo = component.repository.split('/')[-1].replace('.git', '')
-    def prUrl = pendingComponentRepoPRs[repo]
+private def processComponent(def component, def prUrl) {
+    def repo = getFormattedRepoName(component.repository)
     reRunFailedChecks(prUrl)
     enableAutoMerge(prUrl)
+}
+
+private String getFormattedRepoName(String repoUrl) {
+    return repoUrl.split('/')[-1].replace('.git', '')
 }
