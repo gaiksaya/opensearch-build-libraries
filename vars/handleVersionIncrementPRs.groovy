@@ -39,8 +39,8 @@ void call(Map args = [:]) {
     }
 
     // Consider all merged pull requests as processed.
-    println("Adding merged PRs into processed Repo array")
     processedRepositories.addAll(mergedComponentRepoPRs.keySet())
+    println("Added merged PRs into processed Repo array ${processedRepositories}")
 
     // Process core and common dependencies version increment PRs
     println("Processing core and common dependencies")
