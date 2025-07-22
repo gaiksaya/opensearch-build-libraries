@@ -22,7 +22,7 @@
 # Usage:         ./stage-maven-release.sh -d <directory> -a <true|false>
 #
 ###############################################################################################
-set -e -x 
+set -e
 
 usage() {
   echo "usage: $0 [-h] -d <path_to_artifacts_dir> -a <true|false>"
@@ -91,7 +91,7 @@ function cleanup() {
 trap cleanup TERM INT EXIT
 
 function create_maven_settings() {
-  echo "Creating Maven settings file"
+  printf "Creating Maven settings file"
   # Create a settings.xml file with the user+password for maven
   mvn_settings="${workdir}/mvn-settings.xml"
   cat >"${mvn_settings}" <<-EOF
@@ -113,10 +113,10 @@ EOF
 
 create_maven_settings
 
-echo "AUTO_PUBLISH variable is set to: '$AUTO_PUBLISH'"
-echo "==========================================="
-echo "Deploying artifacts under ${ARTIFACT_DIRECTORY} to Staging Repository."
-echo "==========================================="
+printf "AUTO_PUBLISH variable is set to: '$AUTO_PUBLISH'"
+printf "==========================================="
+printf "Deploying artifacts under ${ARTIFACT_DIRECTORY} to Staging Repository."
+printf "==========================================="
 
 # deployment=$(mvn --settings="${mvn_settings}" \
 #   org.sonatype.plugins:nexus-staging-maven-plugin:1.6.13:deploy-staged-repository \
