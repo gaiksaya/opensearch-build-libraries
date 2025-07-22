@@ -15,19 +15,19 @@
  */
 
 void call(Map args = [:]) {
-    lib = library(identifier: 'jenkins@10.2.0', retriever: legacySCM(scm))
+    lib = library(identifier: 'jenkins@testMavenEcho', retriever: legacySCM(scm))
     loadCustomScript(scriptPath: 'publish/stage-maven-release.sh',
                      scriptName: 'stage-maven-release.sh')
     def autoPublish = args.autoPublish ?: false
-    def email = args.email ?: "release@opensearch.org"
-    println("Signing Maven artifacts.")
-    signArtifacts(
-            artifactPath: args.signingArtifactsPath,
-            type: 'maven',
-            platform: 'linux',
-            sigtype: '.asc',
-            email: "${email}",
-    )
+    // def email = args.email ?: "release@opensearch.org"
+    // println("Signing Maven artifacts.")
+    // signArtifacts(
+    //         artifactPath: args.signingArtifactsPath,
+    //         type: 'maven',
+    //         platform: 'linux',
+    //         sigtype: '.asc',
+    //         email: "${email}",
+    // )
 
     println("Stage and Release Maven artifacts.")
     withCredentials([
