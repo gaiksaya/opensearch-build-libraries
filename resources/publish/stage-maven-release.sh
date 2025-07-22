@@ -22,7 +22,7 @@
 # Usage:         ./stage-maven-release.sh -d <directory> -a <true|false>
 #
 ###############################################################################################
-set -e
+set -e -x 
 
 usage() {
   echo "usage: $0 [-h] -d <path_to_artifacts_dir> -a <true|false>"
