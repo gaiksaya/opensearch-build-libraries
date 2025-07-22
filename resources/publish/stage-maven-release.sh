@@ -91,7 +91,6 @@ function cleanup() {
 trap cleanup TERM INT EXIT
 
 function create_maven_settings() {
-  echo "Creating Maven settings file"
   # Create a settings.xml file with the user+password for maven
   mvn_settings="${workdir}/mvn-settings.xml"
   cat >"${mvn_settings}" <<-EOF
@@ -112,10 +111,9 @@ EOF
 }
 
 create_maven_settings
-exec 1>&1 2>&2
 echo "AUTO_PUBLISH variable is set to: '$AUTO_PUBLISH'"
 echo "==========================================="
-echo "Deploying artifacts under ${ARTIFACT_DIRECTORY} to Staging Repository."
+echo "Deploying artifacts under ${ARTIFACT_DIRECTORY} to Staging Repository ${staging_repo_id}."
 echo "==========================================="
 
 # deployment=$(mvn --settings="${mvn_settings}" \
