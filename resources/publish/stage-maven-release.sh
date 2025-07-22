@@ -91,6 +91,7 @@ function cleanup() {
 trap cleanup TERM INT EXIT
 
 function create_maven_settings() {
+  echo "Creating Maven settings file"
   # Create a settings.xml file with the user+password for maven
   mvn_settings="${workdir}/mvn-settings.xml"
   cat >"${mvn_settings}" <<-EOF
