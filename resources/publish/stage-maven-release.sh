@@ -91,6 +91,7 @@ function cleanup() {
 trap cleanup TERM INT EXIT
 
 function create_maven_settings() {
+  echo "Creating Maven settings.xml"
   # Create a settings.xml file with the user+password for maven
   mvn_settings="${workdir}/mvn-settings.xml"
   cat >"${mvn_settings}" <<-EOF
@@ -125,7 +126,7 @@ echo "==========================================="
 #   -DstagingProgressTimeoutMinutes=30 \
 #   -DstagingProfileId="${STAGING_PROFILE_ID}" | tee /dev/stderr)
 
-deployment=`echo "hello" | tee /dev/stderr`
+deployment=`echo "BUILD SUCCESS" | tee /dev/stderr`
 
 if echo "$deployment" | grep "BUILD SUCCESS"; then
   DEPLOYED_STAGING_REPO_ID=$(grep "Closing staging repository with ID" <<< "$deployment" | grep -o "\"[^\"]*\"" | tr -d '"')
