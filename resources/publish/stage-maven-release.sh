@@ -125,19 +125,8 @@ echo "==========================================="
 #   -DstagingProgressTimeoutMinutes=30 \
 #   -DstagingProfileId="${STAGING_PROFILE_ID}" | tee /dev/stderr)
 
-deployment=$(echo '''
-[INFO] Upload finished in 97 seconds.
-[INFO]  * Upload of locally staged artifacts finished.
-[INFO]  * Closing staging repository with ID "78d7607cc6e881--fc1ae442-39f3-42bf-a536-94b42fe97d82".
+deployment="hello"
 
-Waiting for operation to complete...
-.
-
-[INFO] Remote staging finished with success.
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-''' | tee /dev/stderr)
 if echo "$deployment" | grep "BUILD SUCCESS"; then
   DEPLOYED_STAGING_REPO_ID=$(grep "Closing staging repository with ID" <<< "$deployment" | grep -o "\"[^\"]*\"" | tr -d '"')
   echo "Successfully staged and validated artifacts. Staging repository ID: ${DEPLOYED_STAGING_REPO_ID}"
