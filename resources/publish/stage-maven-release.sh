@@ -91,7 +91,7 @@ function cleanup() {
 trap cleanup TERM INT EXIT
 
 function create_maven_settings() {
-  printf "Creating Maven settings file"
+  echo "Creating Maven settings file"
   # Create a settings.xml file with the user+password for maven
   mvn_settings="${workdir}/mvn-settings.xml"
   cat >"${mvn_settings}" <<-EOF
@@ -112,11 +112,11 @@ EOF
 }
 
 create_maven_settings
-
-printf "AUTO_PUBLISH variable is set to: '$AUTO_PUBLISH'"
-printf "==========================================="
-printf "Deploying artifacts under ${ARTIFACT_DIRECTORY} to Staging Repository."
-printf "==========================================="
+exec 1>&1 2>&2
+echo "AUTO_PUBLISH variable is set to: '$AUTO_PUBLISH'"
+echo "==========================================="
+echo "Deploying artifacts under ${ARTIFACT_DIRECTORY} to Staging Repository."
+echo "==========================================="
 
 # deployment=$(mvn --settings="${mvn_settings}" \
 #   org.sonatype.plugins:nexus-staging-maven-plugin:1.6.13:deploy-staged-repository \
