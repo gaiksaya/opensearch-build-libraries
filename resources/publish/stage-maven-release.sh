@@ -125,7 +125,7 @@ echo "==========================================="
 #   -DstagingProgressTimeoutMinutes=30 \
 #   -DstagingProfileId="${STAGING_PROFILE_ID}" | tee /dev/stderr)
 
-deployment="hello"
+deployment=`echo "hello" | tee /dev/stderr`
 
 if echo "$deployment" | grep "BUILD SUCCESS"; then
   DEPLOYED_STAGING_REPO_ID=$(grep "Closing staging repository with ID" <<< "$deployment" | grep -o "\"[^\"]*\"" | tr -d '"')
