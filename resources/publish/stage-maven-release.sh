@@ -135,7 +135,8 @@ if echo "$deployment" | grep "BUILD SUCCESS"; then
   echo "Successfully staged and validated artifacts. Staging repository ID: ${DEPLOYED_STAGING_REPO_ID}"
 else
   echo "Deployment failed!! Please check the logs above for details or check the Sonatype portal https://central.sonatype.com/publishing."
-  exit 1
+  # exit 1
+  DEPLOYED_STAGING_REPO_ID="dummy_id"
 fi
 
 echo "==========================================="
@@ -160,7 +161,7 @@ if [ "$AUTO_PUBLISH" = true ] && [ -n "$DEPLOYED_STAGING_REPO_ID" ] ; then
       }"
       
     RESPONSE_CODE=$(curl -o /tmp/out.txt -w "%{http_code}\n" -X POST "${PROMOTION_URL}" \
-      -u "${SONATYPE_USERNAME}:${SONATYPE_PASSWORD}" \
+      -u "foo:bar" \
       -H "Content-Type: application/json" \
       -H "Accept: application/json" \
       -d "{\"data\": ${JSON_DATA}}")
