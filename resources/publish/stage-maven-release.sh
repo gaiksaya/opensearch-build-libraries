@@ -118,29 +118,17 @@ echo "Deploying artifacts under ${ARTIFACT_DIRECTORY} to Staging Repository ${st
 echo "==========================================="
 
 # deployment=$(mvn --settings="${mvn_settings}" \
-#   org.sonatype.plugins:nexus-staging-maven-plugin:1.6.13:deploy-staged-repository \
+#   org.sonatype.plugins:nexus-staging-maven-plugin:1.7.0:deploy-staged-repository \
 #   -DrepositoryDirectory="${ARTIFACT_DIRECTORY}" \
 #   -DnexusUrl="https://ossrh-staging-api.central.sonatype.com" \
 #   -DserverId=central \
 #   -DautoReleaseAfterClose=false \
 #   -DstagingProgressTimeoutMinutes=30 \
-#   -DstagingProfileId="${STAGING_PROFILE_ID}" | tee /dev/stderr)
+#   -DstagingProfileId="${STAGING_PROFILE_ID}")
 
-deployment=$(echo '''
-[INFO]  * Upload of locally staged artifacts finished.
-[INFO]  * Closing staging repository with ID "78d7607cc6e881--704aa651-6b5b-4ef1-8d04-81bb4c36445d".
+deployment=$(mvn --version)
 
-Waiting for operation to complete...
-.
-
-[INFO] Remote staging finished with success.
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD SUCCESS
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time:  01:48 min
-[INFO] Finished at: 2025-07-16T16:57:01Z
-[INFO] ------------------------------------------------------------------------
-''' | tee)
+echo $deployment
 
 if echo "$deployment" | grep "BUILD SUCCESS"; then
   DEPLOYED_STAGING_REPO_ID=$(grep "Closing staging repository with ID" <<< "$deployment" | grep -o "\"[^\"]*\"" | tr -d '"')
@@ -164,19 +152,19 @@ if [ "$AUTO_PUBLISH" = true ] && [ -n "$DEPLOYED_STAGING_REPO_ID" ] ; then
     echo "Releasing Staging Repository ${DEPLOYED_STAGING_REPO_ID}."
     echo "==========================================="
 
-    # PROMOTION_URL="https://ossrh-staging-api.central.sonatype.com/service/local/staging/bulk/promote"
-    # JSON_DATA="{
-    #     \"stagedRepositoryIds\": [\"${DEPLOYED_STAGING_REPO_ID}\"], 
-    #     \"autoDropAfterRelease\": true, 
-    #     \"description\": \"Releasing ${DEPLOYED_STAGING_REPO_ID}\"}
-    #   }"
+    PROMOTION_URL="https://ossrh-staging-api.central.sonatype.com/service/local/staging/bulk/promote"
+    JSON_DATA="{
+        \"stagedRepositoryIds\": [\"${DEPLOYED_STAGING_REPO_ID}\"], 
+        \"autoDropAfterRelease\": true, 
+        \"description\": \"Releasing ${DEPLOYED_STAGING_REPO_ID}\"}
+      }"
       
-    # RESPONSE_CODE=$(curl -o /tmp/out.txt -w "%{http_code}\n" -X POST "${PROMOTION_URL}" \
-    #   -u "${SONATYPE_USERNAME}:${SONATYPE_PASSWORD}" \
-    #   -H "Content-Type: application/json" \
-    #   -H "Accept: application/json" \
-    #   -d "{\"data\": ${JSON_DATA}}")
-    RESPONSE_CODE=200
+    RESPONSE_CODE=$(curl -o /tmp/out.txt -w "%{http_code}\n" -X POST "${PROMOTION_URL}" \
+      -u "${SONATYPE_USERNAME}:${SONATYPE_PASSWORD}" \
+      -H "Content-Type: application/json" \
+      -H "Accept: application/json" \
+      -d "{\"data\": ${JSON_DATA}}")
+
     if [[ ${RESPONSE_CODE} != 200 ]]; then
         echo "Failed to close and release staging repository ${DEPLOYED_STAGING_REPO_ID}. Response code: ${RESPONSE_CODE}"
         echo "Response: $(cat /tmp/out.txt)"
