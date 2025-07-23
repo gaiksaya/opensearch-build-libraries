@@ -160,7 +160,7 @@ if [ "$AUTO_PUBLISH" = true ] && [ -n "$DEPLOYED_STAGING_REPO_ID" ] ; then
         \"description\": \"Releasing ${DEPLOYED_STAGING_REPO_ID}\"}
       }"
       
-    RESPONSE_CODE=$(curl -o /tmp/out.txt -w "%{http_code}\n" -X POST "${PROMOTION_URL}" \
+    RESPONSE_CODE=$(curl -w "%{http_code}\n" -X POST "${PROMOTION_URL}" \
       -u "foo:bar" \
       -H "Content-Type: application/json" \
       -H "Accept: application/json" \
@@ -168,7 +168,6 @@ if [ "$AUTO_PUBLISH" = true ] && [ -n "$DEPLOYED_STAGING_REPO_ID" ] ; then
 
     if [[ ${RESPONSE_CODE} != 200 ]]; then
         echo "Failed to close and release staging repository ${DEPLOYED_STAGING_REPO_ID}. Response code: ${RESPONSE_CODE}"
-        echo "Response: $(cat /tmp/out.txt)"
         echo "Please release the staging repository manually via Sonatype portal https://central.sonatype.com/publishing ."
     else
         echo "Staging repository ${DEPLOYED_STAGING_REPO_ID} released successfully."
