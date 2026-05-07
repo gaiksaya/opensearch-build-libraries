@@ -114,7 +114,7 @@ void call(Map args = [:]) {
             args.lock ? '--lock' : null,
             args.continueOnError ? '--continue-on-error' : null,
             args.skipArtifactCheck ? '--skip-artifact-check' : null,
-            incremental_enabled ? '--incremental' : null
+            incremental_enabled ? '--incremental' : null,
             '--parallel 4'
         ] - null).join(' '))
     } else {
@@ -131,7 +131,7 @@ void call(Map args = [:]) {
             args.lock ? '--lock' : null,
             args.continueOnError ? '--continue-on-error' : null,
             args.skipArtifactCheck ? '--skip-artifact-check' : null,
-            incremental_enabled ? '--incremental' : null
+            incremental_enabled ? '--incremental' : null,
             '--parallel 4'
         ] - null).join(' '))
     }
