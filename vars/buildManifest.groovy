@@ -115,6 +115,7 @@ void call(Map args = [:]) {
             args.continueOnError ? '--continue-on-error' : null,
             args.skipArtifactCheck ? '--skip-artifact-check' : null,
             incremental_enabled ? '--incremental' : null
+            --parallel 4
         ] - null).join(' '))
     } else {
         // On Windows, use Git Bash or WSL to run the shell script
@@ -131,6 +132,7 @@ void call(Map args = [:]) {
             args.continueOnError ? '--continue-on-error' : null,
             args.skipArtifactCheck ? '--skip-artifact-check' : null,
             incremental_enabled ? '--incremental' : null
+            --parallel 4
         ] - null).join(' '))
     }
 }
