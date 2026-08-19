@@ -3,9 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import jenkins.ReleaseStateData
-
 void call(Map args = [:]) {
-    def rsd = new ReleaseStateData('u', 'a', 's', 't', this)
+    def a = { checkIntegTestResultsOverview(inputManifest: []) }
+    def b = { checkUnpatchedVulnerabilities(version: '3.8.0', product: 'opensearch') }
     echo("Indexing release state for version 3.8.0.")
 }
