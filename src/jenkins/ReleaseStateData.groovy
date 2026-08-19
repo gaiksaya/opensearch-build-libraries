@@ -194,7 +194,7 @@ class ReleaseStateData {
      * @return the issue body with chore circles updated
      */
     String applyChoreStatusCircles(String issueBody, Map<String, Map<String, String>> statusByCriterion) {
-        def chores = ReleaseCriterionCatalog.values().findAll { it.source == ReleaseCriterionCatalog.SOURCE_CHORE }
+        def chores = ReleaseCriterionCatalog.values().findAll { it.source == 'chore_check' }
         def tables = criteriaTables()
         String currentProduct = null
         return issueBody.split(/(?<=\n)/).collect { line ->
@@ -233,7 +233,7 @@ class ReleaseStateData {
      */
     List<Map> parseManualCriteria(String issueBody) {
         return criteriaTables().collectMany { table ->
-            def criteria = ReleaseCriterionCatalog.values().findAll { it.source == ReleaseCriterionCatalog.SOURCE_ISSUE_TABLE && it.criterionType == table.type }
+            def criteria = ReleaseCriterionCatalog.values().findAll { it.source == 'issue_table' && it.criterionType == table.type }
             sectionBetween(issueBody, table.start, table.stop).readLines().collectMany { line ->
                 if (!line.contains('|')) {
                     return []
