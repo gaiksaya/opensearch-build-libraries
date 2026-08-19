@@ -102,7 +102,8 @@ private void indexManualCriteriaForRelease(ReleaseStateData releaseStateData, Ma
     }
 
     releaseStateData.parseManualCriteria(issueBody).each { criterion ->
-        releaseStateData.indexCriterion(new ReleaseCriterion([version: release.version, criterionType: criterion.type, criterionName: criterion.name, status: criterion.status]))
+        def rc = new ReleaseCriterion([version: release.version, criterionType: criterion.type, criterionName: criterion.name, status: criterion.status])
+        releaseStateData.indexCriterion(rc)
     }
 }
 
