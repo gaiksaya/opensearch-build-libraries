@@ -101,7 +101,9 @@ private void indexManualCriteriaForRelease(ReleaseStateData releaseStateData, Ma
         )
     }
 
-    echo("stub parse loop ${issueBody?.size()}")
+    releaseStateData.parseManualCriteria(issueBody).each { criterion ->
+        echo("stub row ${criterion.name}")
+    }
 }
 
 /**
