@@ -160,7 +160,7 @@ private void indexCriteriaForRelease(ReleaseStateData releaseStateData, Map rele
         ]
     ]
 
-    checks.each { check ->
+    for (check in checks) {
         def raw = runCheck(check.name, check.run)
         def result = normalizeResult(check, raw)
         indexCriterion(releaseStateData, release, check, result)
