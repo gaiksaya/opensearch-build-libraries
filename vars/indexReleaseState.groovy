@@ -75,45 +75,7 @@ private void indexCriteriaForRelease(ReleaseStateData releaseStateData, Map rele
  * parsed by ReleaseStateData; each row's status circle is recorded as-is (source 'issue_table').
  */
 private void indexManualCriteriaForRelease(ReleaseStateData releaseStateData, Map release) {
-    if (!release.releaseIssue) {
-        echo("No release issue for version ${release.version}; skipping manual criteria.")
-        return
-    }
-
-    // The release issue is read from the schedule index as a full GitHub issue URL; resolve it to a
-    // bare issue number so a crafted value can never inject into the gh shell command.
-    def issueNumber = (release.releaseIssue =~ /\/issues\/(\d+)/)
-    if (!issueNumber.find()) {
-        echo("Release issue '${release.releaseIssue}' for version ${release.version} is not a valid issue URL; skipping manual criteria.")
-        return
-    }
-
-    def secret_github_bot = [
-        [envVar: 'GITHUB_USER', secretRef: 'op://opensearch-release-secrets/github-bot/ci-bot-username'],
-        [envVar: 'GITHUB_TOKEN', secretRef: 'op://opensearch-release-secrets/github-bot/ci-bot-token']
-    ]
-
-    String issueBody
-    withSecrets(secrets: secret_github_bot) {
-        issueBody = sh(
-            script: "gh issue view ${issueNumber.group(1)} --repo opensearch-project/opensearch-build --json body --jq '.body'",
-            returnStdout: true
-        )
-    }
-
-    releaseStateData.parseManualCriteria(issueBody).each { criterion ->
-        releaseStateData.indexCriterion(new ReleaseCriterion([
-            version      : release.version,
-            releaseDate  : release.releaseDate,
-            product      : criterion.product,
-            criterionType: criterion.type,
-            criterionName: criterion.name,
-            status       : criterion.status,
-            source       : 'issue_table',
-            releaseIssue : release.releaseIssue,
-            checkedBy    : "${env.JOB_NAME} #${env.BUILD_NUMBER}"
-        ]))
-    }
+    echo("stub manual ${release.version}")
 }
 
 /**
@@ -183,30 +145,5 @@ private def normalizeResult(Map check, def raw) {
  * null -> unknown, empty blockingComponents -> met, otherwise not_met with the components and details.
  */
 private void indexCriterion(ReleaseStateData releaseStateData, Map release, Map check, Map result) {
-    String status
-    List<String> blockingComponents = []
-    String details = null
-    if (result == null) {
-        status = 'unknown'
-    } else if (result.blockingComponents.isEmpty()) {
-        status = 'met'
-    } else {
-        status = 'not_met'
-        blockingComponents = result.blockingComponents
-        details = result.details
-    }
-
-    releaseStateData.indexCriterion(new ReleaseCriterion([
-        version            : release.version,
-        releaseDate        : release.releaseDate,
-        product            : check.product,
-        criterionType      : check.type,
-        criterionName      : check.name,
-        status             : status,
-        details            : details,
-        blockingComponents : blockingComponents,
-        source             : 'chore_check',
-        releaseIssue       : release.releaseIssue,
-        checkedBy          : "${env.JOB_NAME} #${env.BUILD_NUMBER}"
-    ]))
+    echo("stub indexCriterion")
 }
