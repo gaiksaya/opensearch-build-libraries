@@ -13,7 +13,6 @@ import groovy.json.JsonOutput
 import java.text.SimpleDateFormat
 import java.util.regex.Pattern
 import utils.OpenSearchMetricsQuery
-import jenkins.ReleaseCriterionCatalog
 
 /**
  * Indexes release state documents on the OpenSearch metrics cluster.
@@ -194,7 +193,16 @@ class ReleaseStateData {
      * @return the issue body with chore circles updated
      */
     String applyChoreStatusCircles(String issueBody, Map<String, Map<String, String>> statusByCriterion) {
-        def chores = ReleaseCriterionCatalog.values().findAll { it.source == 'chore_check' }
+        def chores = [
+            [keyword: 'assigned owner', criterionName: 'release_owners_assigned'],
+            [keyword: 'documentation draft prs', criterionName: 'documentation_draft_prs_up'],
+            [keyword: 'code coverage has not decreased', criterionName: 'code_coverage_not_decreased'],
+            [keyword: 'release notes are ready', criterionName: 'release_notes_ready'],
+            [keyword: 'release ticket is cut', criterionName: 'release_ticket_and_forum_post'],
+            [keyword: 'documentation has been fully reviewed', criterionName: 'documentation_reviewed_signed_off'],
+            [keyword: 'all integration tests are passing', criterionName: 'all_integration_tests_passing'],
+            [keyword: 'no unpatched vulnerabilities', criterionName: 'no_unpatched_vulnerabilities']
+        ]
         def tables = criteriaTables()
         String currentProduct = null
         return issueBody.split(/(?<=\n)/).collect { line ->
@@ -233,7 +241,14 @@ class ReleaseStateData {
      */
     List<Map> parseManualCriteria(String issueBody) {
         return criteriaTables().collectMany { table ->
-            def criteria = ReleaseCriterionCatalog.values().findAll { it.source == 'issue_table' && it.criterionType == table.type }
+            def allManual = [
+                [keyword: 'sanity testing is done', criterionName: 'sanity_testing_done', criterionType: 'entrance'],
+                [keyword: 'roadmap is up-to-date', criterionName: 'roadmap_up_to_date', criterionType: 'entrance'],
+                [keyword: 'security reviews', criterionName: 'security_reviews_complete', criterionType: 'entrance'],
+                [keyword: 'performance tests are run', criterionName: 'performance_tests_posted', criterionType: 'exit'],
+                [keyword: 'release blog is ready', criterionName: 'release_blog_ready', criterionType: 'exit']
+            ]
+            def criteria = allManual.findAll { it.criterionType == table.type }
             sectionBetween(issueBody, table.start, table.stop).readLines().collectMany { line ->
                 if (!line.contains('|')) {
                     return []
