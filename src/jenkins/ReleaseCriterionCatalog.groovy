@@ -35,6 +35,9 @@ enum ReleaseCriterionCatalog {
     PERFORMANCE_TESTS('performance tests are run', 'performance_tests_posted', 'exit', 'issue_table'),
     RELEASE_BLOG('release blog is ready', 'release_blog_ready', 'exit', 'issue_table')
 
+    static final String SOURCE_CHORE = 'chore_check'
+    static final String SOURCE_ISSUE_TABLE = 'issue_table'
+
     final String keyword
     final String criterionName
     final String criterionType

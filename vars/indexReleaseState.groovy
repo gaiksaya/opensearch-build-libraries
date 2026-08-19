@@ -65,9 +65,107 @@ void call(Map args = [:]) {
  * Runs every automated criterion check for a release and indexes a criterion document for each.
  */
 private void indexCriteriaForRelease(ReleaseStateData releaseStateData, Map release) {
-    echo("stub indexCriteriaForRelease ${release.version}")
-}
+    String version = release.version
+    List<String> inputManifest = [
+        "manifests/${version}/opensearch-${version}.yml",
+        "manifests/${version}/opensearch-dashboards-${version}.yml"
+    ]
 
+    // Integration results come product-keyed from a single chore call; fetch once (the two per-product
+    // criteria below both call this) and slice per product to avoid re-running the same queries.
+    def integResults = null
+    Closure integResultsForProduct = { String product ->
+        if (integResults == null) {
+            integResults = checkIntegTestResultsOverview(inputManifest: inputManifest)
+        }
+        return integResults[product]
+    }
+
+    // Each entry maps a release criterion (from the release issue's entrance/exit tables) to the chore
+    // that verifies it:
+    //   name    - the criterion name, matching the release_state index
+    //   type    - entrance or exit criterion
+    //   product - which product line the criterion applies to
+    //   run     - closure that runs the chore and returns its problems; invoked via runCheck so a
+    //             failure in one check is isolated and recorded as 'unknown'
+    //   render  - optional closure that normalizes a keyed-map result into blocking_components + details
+    //
+    // Criteria not covered by an automated chore (sanity testing, roadmap, security reviews,
+    // performance tests, release blog) are manual and parsed from the release issue's tables by
+    // indexManualCriteriaForRelease.
+    def checks = [
+        [
+            name   : 'release_owners_assigned',
+            type   : 'entrance',
+            product: 'both',
+            run    : { checkRequestAssignReleaseOwners(inputManifest: inputManifest, action: 'check') }
+        ],
+        [
+            name   : 'documentation_draft_prs_up',
+            type   : 'entrance',
+            product: 'both',
+            run    : { checkDocumentationIssues(version: version, action: 'check') }
+        ],
+        [
+            name   : 'code_coverage_not_decreased',
+            type   : 'entrance',
+            product: 'both',
+            run    : { checkCodeCoverage(inputManifest: inputManifest, action: 'check') }
+        ],
+        [
+            name   : 'release_notes_ready',
+            type   : 'entrance',
+            product: 'both',
+            run    : { checkReleaseNotes(inputManifest: inputManifest, action: 'check') }
+        ],
+        [
+            name   : 'release_ticket_and_forum_post',
+            type   : 'entrance',
+            product: 'both',
+            run    : { checkReleaseIssues(inputManifest: inputManifest, action: 'check') }
+        ],
+        [
+            name   : 'documentation_reviewed_signed_off',
+            type   : 'exit',
+            product: 'both',
+            run    : { checkDocumentationPullRequests(version: version) }
+        ],
+        [
+            name   : 'all_integration_tests_passing',
+            type   : 'exit',
+            product: 'opensearch',
+            run    : { integResultsForProduct('opensearch') },
+            render : { raw -> renderIntegResults(raw) }
+        ],
+        [
+            name   : 'all_integration_tests_passing',
+            type   : 'exit',
+            product: 'opensearch-dashboards',
+            run    : { integResultsForProduct('opensearch-dashboards') },
+            render : { raw -> renderIntegResults(raw) }
+        ],
+        [
+            name   : 'no_unpatched_vulnerabilities',
+            type   : 'exit',
+            product: 'opensearch',
+            run    : { checkUnpatchedVulnerabilities(version: version, product: 'opensearch', releaseDate: release.releaseDate) },
+            render : { raw -> renderVulnerabilityResults(raw) }
+        ],
+        [
+            name   : 'no_unpatched_vulnerabilities',
+            type   : 'exit',
+            product: 'opensearch-dashboards',
+            run    : { checkUnpatchedVulnerabilities(version: version, product: 'opensearch-dashboards', releaseDate: release.releaseDate) },
+            render : { raw -> renderVulnerabilityResults(raw) }
+        ]
+    ]
+
+    checks.each { check ->
+        def raw = runCheck(check.name, check.run)
+        def result = normalizeResult(check, raw)
+        indexCriterion(releaseStateData, release, check, result)
+    }
+}
 
 /**
  * Reads the manual criteria (no chore verifies them) from the release issue's criteria tables and
@@ -101,9 +199,22 @@ private void indexManualCriteriaForRelease(ReleaseStateData releaseStateData, Ma
         )
     }
 
+    // A plain for-loop, not .each { }: constructing a ReleaseCriterion and passing it to a typed method
+    // inside a closure body makes the Groovy pipeline-unit compiler resolve ReleaseCriterion's fields
+    // mid-compile, re-entering a non-reentrant GroovyClassLoader recompile lock and deadlocking. The
+    // loop compiles inline in this method, so that re-entrant path never happens.
     for (criterion in releaseStateData.parseManualCriteria(issueBody)) {
-        def rc = new ReleaseCriterion([version: release.version, criterionType: criterion.type, criterionName: criterion.name, status: criterion.status])
-        releaseStateData.indexCriterion(rc)
+        releaseStateData.indexCriterion(new ReleaseCriterion([
+            version      : release.version,
+            releaseDate  : release.releaseDate,
+            product      : criterion.product,
+            criterionType: criterion.type,
+            criterionName: criterion.name,
+            status       : criterion.status,
+            source       : 'issue_table',
+            releaseIssue : release.releaseIssue,
+            checkedBy    : "${env.JOB_NAME} #${env.BUILD_NUMBER}"
+        ]))
     }
 }
 
