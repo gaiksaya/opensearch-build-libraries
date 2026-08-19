@@ -101,19 +101,7 @@ private void indexManualCriteriaForRelease(ReleaseStateData releaseStateData, Ma
         )
     }
 
-    releaseStateData.parseManualCriteria(issueBody).each { criterion ->
-        releaseStateData.indexCriterion(new ReleaseCriterion([
-            version      : release.version,
-            releaseDate  : release.releaseDate,
-            product      : criterion.product,
-            criterionType: criterion.type,
-            criterionName: criterion.name,
-            status       : criterion.status,
-            source       : 'issue_table',
-            releaseIssue : release.releaseIssue,
-            checkedBy    : "${env.JOB_NAME} #${env.BUILD_NUMBER}"
-        ]))
-    }
+    echo("stub parse loop ${issueBody?.size()}")
 }
 
 /**
