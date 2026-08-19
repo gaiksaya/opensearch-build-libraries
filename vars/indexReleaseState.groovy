@@ -145,5 +145,30 @@ private def normalizeResult(Map check, def raw) {
  * null -> unknown, empty blockingComponents -> met, otherwise not_met with the components and details.
  */
 private void indexCriterion(ReleaseStateData releaseStateData, Map release, Map check, Map result) {
-    echo("stub indexCriterion")
+    String status
+    List<String> blockingComponents = []
+    String details = null
+    if (result == null) {
+        status = 'unknown'
+    } else if (result.blockingComponents.isEmpty()) {
+        status = 'met'
+    } else {
+        status = 'not_met'
+        blockingComponents = result.blockingComponents
+        details = result.details
+    }
+
+    releaseStateData.indexCriterion(new ReleaseCriterion([
+        version            : release.version,
+        releaseDate        : release.releaseDate,
+        product            : check.product,
+        criterionType      : check.type,
+        criterionName      : check.name,
+        status             : status,
+        details            : details,
+        blockingComponents : blockingComponents,
+        source             : 'chore_check',
+        releaseIssue       : release.releaseIssue,
+        checkedBy          : "${env.JOB_NAME} #${env.BUILD_NUMBER}"
+    ]))
 }
