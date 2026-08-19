@@ -41,11 +41,8 @@ class SecurityAdvisoryData {
     /** The index of project-scoped advisory exemptions, edited live ahead of the next scan. */
     static final String IGNORED_ADVISORIES_INDEX = 'ignored-advisories'
 
-    /** The per-product release_type of bundled components, keyed by product (security-advisories#135). */
-    static final Map<String, String> RELEASE_TYPE_BY_PRODUCT = [
-        'opensearch'           : 'bundle_opensearch',
-        'opensearch-dashboards': 'bundle_opensearch_dashboards'
-    ]
+    /** The release_type of components shipped in the bundled distribution (security-advisories#135). */
+    static final String RELEASE_TYPE = 'bundle'
 
     /**
      * Max CVE ids per advisories terms lookup. OpenSearch's default max_terms_count is 65536; a
@@ -125,15 +122,9 @@ class SecurityAdvisoryData {
      *
      * @param scansIndex the concrete scans index (from getLatestScansIndex)
      * @param branchTag  the resolved project.tag (from resolveVersionTag)
-     * @param product    the release product whose bundled components to scope to (a key of
-     *                   RELEASE_TYPE_BY_PRODUCT)
      * @return map of project name -> sorted list of its open vulnerability identifiers
      */
-    Map<String, List<String>> getOpenVulnerabilitiesByProject(String scansIndex, String branchTag, String product) {
-        String releaseType = RELEASE_TYPE_BY_PRODUCT[product]
-        if (!releaseType) {
-            throw new RuntimeException("Unknown product '${product}'; expected one of ${RELEASE_TYPE_BY_PRODUCT.keySet()}.")
-        }
+    Map<String, List<String>> getOpenVulnerabilitiesByProject(String scansIndex, String branchTag) {
         Map<String, Set<String>> exemptedByProject = getExemptedAliasesByProject(branchTag)
         def query = shellEscape([
             size    : QUERY_SIZE,
@@ -142,7 +133,7 @@ class SecurityAdvisoryData {
             _source : ['project.name', 'vulnerabilities.id', 'vulnerabilities.aliases', 'vulnerabilities.excluded'],
             query   : [bool: [filter: [
                 [term: ['project.tag': branchTag]],
-                [term: ['release_type.keyword': releaseType]]
+                [term: ['release_type.keyword': RELEASE_TYPE]]
             ]]]
         ])
         def response = advisoriesQuery.search(scansIndex, query)
